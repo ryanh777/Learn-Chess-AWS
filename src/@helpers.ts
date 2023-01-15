@@ -20,7 +20,7 @@ export const safeGameMutate = (
    game: Chess,
    modify: (game: Chess) => void
 ): Chess => {
-   const update: Chess = new Chess();
+   const update: Chess = game;
    modify(update);
    return update;
 };
