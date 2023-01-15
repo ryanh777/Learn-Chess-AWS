@@ -9,7 +9,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "chess.js": "github:jhlywa/chess.js",
     "react": "^18.2.0",
+    "react-chessboard": "^2.0.7",
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
