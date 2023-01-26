@@ -1,13 +1,13 @@
 import MainContent from './components/mainContent';
-import { LogicContextProvider } from './LogicContext';
+import { LogicContextProvider2 } from './LogicContext2';
 
 function App() {
 	return (
 		<div>
 			<div className='flex items-center min-h-screen bg-bgprimary text-textprimary'>
-				<LogicContextProvider>
+				<LogicContextProvider2>
 					<MainContent/>
-				</LogicContextProvider>
+				</LogicContextProvider2>
 			</div>
 		</div>
 	);
