@@ -43,3 +43,10 @@ export type LogicContextActionType =
         payload: { game: Chess; move: Move };
      }
    | { type: "auto-move"; payload: { game: Chess; move: Move } };
+
+export type LogicContextStateType2 = {
+   game: Chess;
+}
+
+export type LogicContextActionType2 = 
+   | { type: "drop"; payload: Chess }

@@ -31,12 +31,13 @@ const LogicContext = createContext<{
 
 interface Props {
     children: ReactNode;
-    user: User;
-    prevMove: Move
+    // user: User;
+    // prevMove: Move
 }
 
 export const LogicContextProvider = (props: Props) => {
-    const initialStateWithUser = { ...initialState, user: props.user, prevMove: props.prevMove}
+    // const initialStateWithUser = { ...initialState, user: props.user, prevMove: props.prevMove}
+    const initialStateWithUser = { ...initialState }
     const [state, dispatch] = useReducer(logicReducer, initialStateWithUser)
 
     return (

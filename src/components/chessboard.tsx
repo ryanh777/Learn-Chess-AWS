@@ -1,5 +1,5 @@
 import { Children, MutableRefObject, useContext, useEffect, useRef, useState } from 'react'
-import { Square, } from 'chess.js'
+import { Square, Chess} from 'chess.js'
 // import { Chessboard } from "react-chessboard";
 import LogicContext from '../LogicContext';
 import { fetchMove, getBlackLearnStateFirstMove, getRandomNextMove, getRootMove, safeGameMutate } from '../@helpers';
@@ -14,28 +14,11 @@ const ChessboardContainer = () => {
    const { state, dispatch } = useContext(LogicContext)
    const { user, game, boardOrientation, isLearnState, prevMove } = state
    const [boardWidth, setBoardWidth] = useState<number>(Math.min(window.innerHeight, window.innerWidth) * .95)
-   // const boardContainer = useRef(null)
-   // const test = document.querySelector('div')
-   // const { width = 1, height = 1 } = useResizeObserver<HTMLDivElement>({ref: boardContainer}); 
-   
-
-   // useEffect(() => {
-   //    const resizeObserver = new ResizeObserver(
-   //       (entries) => {
-   //          console.log("width:", entries[0].contentRect.width)
-   //          console.log("height:", entries[0].contentRect.height)
-   //          console.log("min:", Math.min(entries[0].contentRect.width, entries[0].contentRect.height))
-   //          setBoardWidth(Math.min(entries[0].contentRect.width, entries[0].contentRect.height))
-   //       });
-   //    if (test) resizeObserver.observe(test)
-   //    return (): void => { if (test) resizeObserver.unobserve(test) };
-   // }, []);
-
 
    const setBW = () => {
       // console.log("height: ", window.innerHeight)
       // console.log("width: ", window.innerWidth)
-      // console.log("boardWdith:", boardWidth)
+      console.log("boardWdith:", boardWidth)
       setBoardWidth(Math.min(window.innerHeight, window.innerWidth) * .95)
    }
 
@@ -45,41 +28,6 @@ const ChessboardContainer = () => {
       window.removeEventListener('resize', setBW)
      }
    }, [])
-   
-
-   // const onDrop = (sourceSquare: Square, targetSquare: Square) => {
-   //    let move = null;
-   // // if (isLearnState) {
-   //    dispatch({ 
-   //       type: "drop", 
-   //       payload: safeGameMutate(game, (game) => {
-   //          move = game.move({
-   //             from: sourceSquare,
-   //             to: targetSquare,
-   //             promotion: "q", // always promote to a queen for example simplicity
-   //          });
-   //       }),
-   //    })
-   // // }
-   // // } else {
-   // //    dispatch({
-   // //       type: "update-game",
-   // //       payload: {
-   // //          game: safeGameMutate(game, (game) => {
-   // //             move = game.move({
-   // //                from: sourceSquare,
-   // //                to: targetSquare,
-   // //                promotion: "q", // always promote to a queen for example simplicity
-   // //             });
-   // //          })
-   // //          move: 
-   // //       }
-   // //    })
-   // // }
-   //    if (move === null) return false; // illegal move
-   //    props.userDidMove.current = true
-   //    return true;
-   // }
 
    const gameHasChanged = async () => { 
       const moveList: string[] = game.history()
@@ -175,7 +123,6 @@ const ChessboardContainer = () => {
             });
          }),
       })
-      
       if (move === null) return false; // illegal move
       setTimeout(gameHasChanged, 200)
       return true;

@@ -1,12 +1,14 @@
 import MainContent from './components/mainContent';
-// import styled from 'styled-components'
+import { LogicContextProvider } from './LogicContext';
 
 function App() {
 	return (
 		<div>
-      <div className='flex items-center min-h-screen bg-bgprimary text-textprimary'>
-          <MainContent/>
-      </div>
+			<div className='flex items-center min-h-screen bg-bgprimary text-textprimary'>
+				<LogicContextProvider>
+					<MainContent/>
+				</LogicContextProvider>
+			</div>
 		</div>
 	);
 }
