@@ -20,10 +20,6 @@ const ChessTest = () => {
         }
     }, [])
 
-    useEffect(() => {
-        console.log("game changed bitch")
-    }, [game])
-
     const onDrop = (sourceSquare: Square, targetSquare: Square): boolean => {
         let move: Move | null = null;
         const gameCopy: Chess = safeGameMutate(game, (game) => {
