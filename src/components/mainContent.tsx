@@ -1,14 +1,23 @@
-import ChessboardContainer from './chessboard'
+import { useAppDispatch, useAppSelector } from '../redux/hooks'
+import { success } from '../redux/slices/login'
 import ChessTest from './chesstest'
 
 const MainContent = () => {
+    const isLoggedIn = useAppSelector((state) => state.login.isLoggedIn);
+    const dispatch = useAppDispatch();
+
+    console.log("isloggedin:", isLoggedIn);
+
     return (
         <>
-            {
+            { isLoggedIn ?
                 <div className="flex flex-grow">
-                    {/* <ChessboardContainer/> */}
                     <APITest/>
                     <ChessTest/>
+                </div>
+                :
+                <div>
+                    <button onClick={() => dispatch(success())}>yessir</button>
                 </div>
             }
         </> 
@@ -16,17 +25,15 @@ const MainContent = () => {
 }
 
 const test = async () => {
-    const resp = await fetch('http://52.201.219.243/')
+    const resp = await fetch('api/')
     .then((res) => res.json())
-    console.log("response:", resp);
+    console.log(resp);
 }
 
 const APITest = () => {
     return (
         <>
-            {
-                <button onClick={test}>submit</button>
-            }
+            <button onClick={test}>submit</button>
         </>
     )
 }

@@ -1,5 +1,4 @@
 import { Chess } from "chess.js";
-import { LogicContextStateType } from "./@types";
 
 export interface User {
    username: string;
@@ -57,28 +56,28 @@ export interface ChildData {
    piece: string;
 }
 
-export const loginInitialState = {
-   username: "",
-   password: "",
-   confirmpassword: "",
-   error: "",
-   isLoading: false,
-   isLoggedIn: false,
-};
+// export const loginInitialState = {
+//    username: "",
+//    password: "",
+//    confirmpassword: "",
+//    error: "",
+//    isLoading: false,
+//    isLoggedIn: false,
+// };
 
-export const appContextInitialState: LogicContextStateType = {
-   user: {
-      username: "",
-      whiteRootID: "",
-      blackRootID: "",
-   },
-   game: new Chess(),
-   boardOrientation: Orientation.white,
-   prevMove: {
-      move: "",
-      parentID: "",
-      piece: "",
-      childData: [],
-   },
-   isLearnState: false,
-};
+// export const appContextInitialState: LogicContextStateType = {
+//    user: {
+//       username: "",
+//       whiteRootID: "",
+//       blackRootID: "",
+//    },
+//    game: new Chess(),
+//    boardOrientation: Orientation.white,
+//    prevMove: {
+//       move: "",
+//       parentID: "",
+//       piece: "",
+//       childData: [],
+//    },
+//    isLearnState: false,
+// };

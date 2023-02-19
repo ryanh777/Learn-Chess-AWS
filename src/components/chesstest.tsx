@@ -1,12 +1,13 @@
 import { useContext, useEffect, useState } from 'react';
 import { Chessboard } from 'react-chessboard';
 import { Chess, Move, Square } from 'chess.js'
-import LogicContext2 from '../LogicContext2';
 import { safeGameMutate } from '../@helpers';
+import { useAppDispatch, useAppSelector } from '../redux/hooks';
+import { drop } from '../redux/slices/boardLogic';
 
 const ChessTest = () => {
-    const { state, dispatch } = useContext(LogicContext2)
-    const { game } = state
+    const game = useAppSelector((state) => state.logic.game);
+    const dispatch = useAppDispatch();
     const [boardWidth, setBoardWidth] = useState<number>(Math.min(window.innerHeight, window.innerWidth) * .85)
 
     const setBW = () => {
@@ -30,10 +31,7 @@ const ChessTest = () => {
              });
         })
         if (move == null) return false;
-        dispatch({ 
-            type: "drop", 
-            payload: gameCopy
-         })
+        dispatch(drop(gameCopy))
         return true;
     }
 
