@@ -12,7 +12,7 @@ const MainContent = () => {
         <>
             { isLoggedIn ?
                 <div className="flex flex-grow">
-                    <APITest/>
+                    {/* <APITest/> */}
                     <ChessTest/>
                 </div>
                 :

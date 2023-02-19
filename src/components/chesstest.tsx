@@ -1,12 +1,12 @@
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Chessboard } from 'react-chessboard';
 import { Chess, Move, Square } from 'chess.js'
-import { safeGameMutate } from '../@helpers';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import { drop } from '../redux/slices/board';
 
 const ChessTest = () => {
-    const game = useAppSelector((state) => state.board.game);
+    const moves = useAppSelector((state) => state.board.moves);
+    const [game, setGame] = useState(new Chess());
     const dispatch = useAppDispatch();
     const [boardWidth, setBoardWidth] = useState<number>(Math.min(window.innerHeight, window.innerWidth) * .85)
 
@@ -21,17 +21,22 @@ const ChessTest = () => {
         }
     }, [])
 
-    const onDrop = (sourceSquare: Square, targetSquare: Square): boolean => {
-        let move: Move | null = null;
-        const gameCopy: Chess = safeGameMutate(game, (game) => {
-            move = game.move({
-                from: sourceSquare,
-                to: targetSquare,
-                promotion: "q"
-             });
+    useEffect(() => {
+        let newGame: Chess = new Chess()
+        moves.forEach((move) => {
+            newGame.move(move);
         })
+        setGame(newGame)
+    }, [moves])
+
+    const onDrop = (sourceSquare: Square, targetSquare: Square): boolean => {
+        let move: Move | null = game.move({
+            from: sourceSquare,
+            to: targetSquare,
+            promotion: "q"
+        });
         if (move == null) return false;
-        dispatch(drop(gameCopy))
+        dispatch(drop(move.san))
         return true;
     }
 
@@ -40,8 +45,7 @@ const ChessTest = () => {
             <Chessboard
                 boardWidth={boardWidth}
                 position={game.fen()}
-                onPieceDrop={onDrop}
-                />
+                onPieceDrop={onDrop}/>
         </div>
     )
 }

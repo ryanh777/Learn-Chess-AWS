@@ -3,19 +3,19 @@ import { Chess } from "chess.js";
 import { RootState } from "../store";
 
 interface BoardState {
-    game: Chess;
+    moves: string[];
  }
 
  const initialState: BoardState = {
-    game: new Chess()
+    moves: []
  }
 
  export const boardSlice = createSlice({
     name: 'board',
     initialState,
     reducers: {
-        drop: (state, action: PayloadAction<Chess>) => {
-            state.game = action.payload
+        drop: (state, action: PayloadAction<string>) => {
+            state.moves.push(action.payload);
         }
     }
  })
