@@ -1,11 +1,11 @@
 import { configureStore } from "@reduxjs/toolkit";
 import loginReducer from "./slices/login";
-import logicReducer from "./slices/boardLogic"
+import boardReducer from "./slices/board"
 
 const store = configureStore({
     reducer: {
       login: loginReducer,
-      logic: logicReducer
+      board: boardReducer
     },
 })
 

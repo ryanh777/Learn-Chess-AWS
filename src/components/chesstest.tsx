@@ -3,10 +3,10 @@ import { Chessboard } from 'react-chessboard';
 import { Chess, Move, Square } from 'chess.js'
 import { safeGameMutate } from '../@helpers';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
-import { drop } from '../redux/slices/boardLogic';
+import { drop } from '../redux/slices/board';
 
 const ChessTest = () => {
-    const game = useAppSelector((state) => state.logic.game);
+    const game = useAppSelector((state) => state.board.game);
     const dispatch = useAppDispatch();
     const [boardWidth, setBoardWidth] = useState<number>(Math.min(window.innerHeight, window.innerWidth) * .85)
 

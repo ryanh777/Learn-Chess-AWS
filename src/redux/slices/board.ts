@@ -2,16 +2,16 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Chess } from "chess.js";
 import { RootState } from "../store";
 
-interface LogicState {
+interface BoardState {
     game: Chess;
  }
 
- const initialState: LogicState = {
+ const initialState: BoardState = {
     game: new Chess()
  }
 
- export const logicSlice = createSlice({
-    name: 'logic',
+ export const boardSlice = createSlice({
+    name: 'board',
     initialState,
     reducers: {
         drop: (state, action: PayloadAction<Chess>) => {
@@ -20,9 +20,9 @@ interface LogicState {
     }
  })
 
- export const { drop } = logicSlice.actions
+ export const { drop } = boardSlice.actions
 
  // Other code such as selectors can use the imported `RootState` type
-export const selectLogic = (state: RootState) => state.logic
+export const selectBoard = (state: RootState) => state.board
 
-export default logicSlice.reducer
+export default boardSlice.reducer
