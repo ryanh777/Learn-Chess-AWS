@@ -1,6 +1,6 @@
 import { useAppDispatch, useAppSelector } from '../redux/hooks'
 import { success } from '../redux/slices/login'
-import ChessTest from './chesstest'
+import ChessTest from './chessboardContainer'
 
 const MainContent = () => {
     const isLoggedIn = useAppSelector((state) => state.login.isLoggedIn);

@@ -4,7 +4,7 @@ import { Chess, Move, Square } from 'chess.js'
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import { drop } from '../redux/slices/board';
 
-const ChessTest = () => {
+const ChessboardContainer = () => {
     const moves = useAppSelector((state) => state.board.moves);
     const [game, setGame] = useState(new Chess());
     const dispatch = useAppDispatch();
@@ -50,4 +50,4 @@ const ChessTest = () => {
     )
 }
 
-export default ChessTest;
+export default ChessboardContainer;
