@@ -8,10 +8,10 @@ const ChessboardContainer = () => {
     const moves = useAppSelector((state) => state.board.moves);
     const [game, setGame] = useState(new Chess());
     const dispatch = useAppDispatch();
-    const [boardWidth, setBoardWidth] = useState<number>(Math.min(window.innerHeight, window.innerWidth) * .85)
+    const [boardWidth, setBoardWidth] = useState<number>(Math.min(window.innerHeight, window.innerWidth) * .95)
 
     const setBW = () => {
-        setBoardWidth(Math.min(window.innerHeight, window.innerWidth) * .85)
+        setBoardWidth(Math.min(window.innerHeight, window.innerWidth) * .95)
     }
   
     useEffect(() => {
@@ -41,11 +41,15 @@ const ChessboardContainer = () => {
     }
 
     return (
-        <div>
+        <div className='mx-6'>
             <Chessboard
                 boardWidth={boardWidth}
                 position={game.fen()}
-                onPieceDrop={onDrop}/>
+                onPieceDrop={onDrop}
+                customDarkSquareStyle={{backgroundColor: '#769656'}}
+                customLightSquareStyle={{backgroundColor: '#eeeed2'}}
+                customBoardStyle={{borderRadius: '5px'}}
+                />
         </div>
     )
 }

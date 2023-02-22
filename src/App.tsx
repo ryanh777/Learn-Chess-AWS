@@ -1,4 +1,5 @@
-import ChessboardContainer from './components/chessboardContainer';
+import MainContent from './components/mainContent';
+import Sidebar from './components/sidebar';
 import { useAppDispatch, useAppSelector } from './redux/hooks';
 import { success } from './redux/slices/login';
 
@@ -7,10 +8,11 @@ function App() {
     const dispatch = useAppDispatch();
 	
 	return (
-		<div className='flex items-center min-h-screen bg-bgprimary text-textprimary'>
+        <div>
 			{ isLoggedIn ?
-                <div className="flex flex-grow">
-                    <ChessboardContainer/>
+                <div className='flex items-center min-h-screen bg-bgprimary text-textprimary'>
+                    <MainContent/>
+                    <Sidebar/>
                 </div>
                 :
                 <div>
