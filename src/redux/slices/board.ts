@@ -25,11 +25,17 @@ interface BoardState {
         reset: (state) => {
             state.moves = [];
             state.pieces = [];
+        },
+        flip: (state) => {
+            state.moves = [];
+            state.pieces = [];
+            state.boardOrientation == Orientation.white ? 
+                state.boardOrientation = Orientation.black : state.boardOrientation = Orientation.white 
         }
     }
  })
 
- export const { drop, reset } = boardSlice.actions
+ export const { drop, reset, flip } = boardSlice.actions
 
  // Other code such as selectors can use the imported `RootState` type
 export const selectBoard = (state: RootState) => state.board

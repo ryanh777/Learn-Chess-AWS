@@ -6,6 +6,7 @@ import { drop } from '../redux/slices/board';
 
 const ChessboardContainer = () => {
     const moves = useAppSelector((state) => state.board.moves);
+    const boardOrientation = useAppSelector((state) => state.board.boardOrientation);
     const [game, setGame] = useState(new Chess());
     const dispatch = useAppDispatch();
     const [boardWidth, setBoardWidth] = useState<number>(Math.min(window.innerHeight, window.innerWidth) * .95)
@@ -44,6 +45,7 @@ const ChessboardContainer = () => {
         <div className='mx-6'>
             <Chessboard
                 boardWidth={boardWidth}
+                boardOrientation={boardOrientation}
                 position={game.fen()}
                 onPieceDrop={onDrop}
                 customDarkSquareStyle={{backgroundColor: '#769656'}}
