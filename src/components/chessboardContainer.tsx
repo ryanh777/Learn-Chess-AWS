@@ -36,7 +36,7 @@ const ChessboardContainer = () => {
             promotion: "q"
         });
         if (move == null) return false;
-        dispatch(drop(move.san))
+        dispatch(drop({ move: move.san, piece: (move.color.concat(move.piece))}))
         return true;
     }
 

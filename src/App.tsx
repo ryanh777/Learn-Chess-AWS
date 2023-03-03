@@ -27,7 +27,6 @@ function App() {
 			}
 		}
 		fetchToken()
-        console.log("here is am")
 	}, [])
 
     const register = async () => {
