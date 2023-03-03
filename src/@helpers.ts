@@ -14,6 +14,16 @@ export const fetchMove = async (id: string): Promise<Move> => {
    return fetch(`/data/${id}`).then((res) => res.json());
 };
 
+export async function postMove(data: Object) {
+   return fetch("/api/data/", {
+      method: "POST",
+      headers: {
+         "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+   }).then((res) => res.json());
+}
+
 export const getRandomNextMove = async (move: Move): Promise<Move> => {
    const randomIndex = Math.floor(Math.random() * move.childData.length);
    return fetchMove(move.childData[randomIndex].id);
