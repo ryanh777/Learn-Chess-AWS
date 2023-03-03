@@ -6,15 +6,15 @@ interface BoardState {
     moves: string[];
     pieces: string[];
     boardOrientation: Orientation;
- }
+}
 
- const initialState: BoardState = {
+const initialState: BoardState = {
     moves: [],
     pieces: [],
     boardOrientation: Orientation.white
- }
+}
 
- export const boardSlice = createSlice({
+export const boardSlice = createSlice({
     name: 'board',
     initialState,
     reducers: {
@@ -31,13 +31,16 @@ interface BoardState {
             state.pieces = [];
             state.boardOrientation == Orientation.white ? 
                 state.boardOrientation = Orientation.black : state.boardOrientation = Orientation.white 
+        },
+        undo: (state) => {
+            state.moves.pop();
+            state.pieces.pop();
         }
     }
- })
+})
 
- export const { drop, reset, flip } = boardSlice.actions
+export const { drop, reset, flip, undo } = boardSlice.actions
 
- // Other code such as selectors can use the imported `RootState` type
 export const selectBoard = (state: RootState) => state.board
 
 export default boardSlice.reducer
