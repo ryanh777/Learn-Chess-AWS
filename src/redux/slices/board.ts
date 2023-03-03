@@ -24,6 +24,7 @@ interface BoardState {
         },
         reset: (state) => {
             state.moves = [];
+            state.pieces = [];
         }
     }
  })

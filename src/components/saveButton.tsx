@@ -35,7 +35,7 @@ const SaveButton = (): JSX.Element => {
 		return id;
 	}
 
-    const save = async () => {
+    const handleClick = async () => {
         if (moves.length === 0) {
             console.log("must make a move before saving")
             return
@@ -46,7 +46,6 @@ const SaveButton = (): JSX.Element => {
 
         for (let i = 0; i < moves.length; i++) {
             let hasChildren: boolean = (childData.length > 0) ? true : false
-            // const piece: string = history[i].color.concat(history[i].piece)
             const piece: string = pieces[i];
             if (hasChildren) {
                 let broken: boolean = false
@@ -63,14 +62,13 @@ const SaveButton = (): JSX.Element => {
                 id = await createChild(id, moves[i], piece)
             }
         }
-        // const rootMove: Move = await getRootMove(boardOrientation, user)
         dispatch(reset())
     }
 
     return (
         <button 
             className="flex items-center justify-center flex-grow mr-1 text-lg bg-button rounded-xl hover:bg-buttonHover"
-            onClick={save}
+            onClick={handleClick}
             >
             {<RiSave3Fill size={36}/>}
         </button>

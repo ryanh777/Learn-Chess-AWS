@@ -1,8 +1,13 @@
 import { AiOutlineClear } from 'react-icons/ai'
+import { useAppDispatch } from '../redux/hooks';
+import { reset } from '../redux/slices/board';
 
 const ResetButton = () => {
+    const dispatch = useAppDispatch();
 
-    const handleClick = async () => { }
+    const handleClick = async () => {
+        dispatch(reset())
+    }
 
     return (
         <button
