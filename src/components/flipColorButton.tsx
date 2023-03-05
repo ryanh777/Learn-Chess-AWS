@@ -1,12 +1,19 @@
 import { FiRepeat } from 'react-icons/fi'
-import { useAppDispatch } from '../redux/hooks'
+import { Orientation } from '../@constants';
+import { getRootMove } from '../@helpers';
+import { useAppDispatch, useAppSelector } from '../redux/hooks'
 import { flip } from '../redux/slices/board';
 
 const FlipColorButton = (): JSX.Element => {
    const dispatch = useAppDispatch();
+   const boardOrientation = useAppSelector((state) => state.board.boardOrientation);
+   const user = useAppSelector((state) => state.user);
 
-   const handleClick = () => {
-      dispatch(flip())
+   const handleClick = async () => {
+      let flippedOrientation: Orientation;
+      boardOrientation == Orientation.white ? 
+         flippedOrientation = Orientation.black : flippedOrientation = Orientation.white;
+      dispatch(flip(await getRootMove(flippedOrientation, user)))
    }
 
    return (

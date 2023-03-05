@@ -1,13 +1,12 @@
 import { RiSave3Fill } from 'react-icons/ri'
-import { ChildData } from '../@constants'
-import { getChildren, postMove } from '../@helpers'
+import { MoveData } from '../@constants'
+import { getChildren, getRootMove, postMove } from '../@helpers'
 import { useAppDispatch, useAppSelector } from '../redux/hooks'
 import { reset } from '../redux/slices/board'
 
 const SaveButton = (): JSX.Element => {
     const dispatch = useAppDispatch();
-    const moves = useAppSelector((state) => state.board.moves);
-    const pieces = useAppSelector((state) => state.board.pieces);
+    const moves = useAppSelector((state) => state.board.moveData);
     const boardOrientation = useAppSelector((state) => state.board.boardOrientation);
     const user = useAppSelector((state) => state.user);
 
@@ -18,7 +17,7 @@ const SaveButton = (): JSX.Element => {
             piece: piece
 		}
 		const id = await postMove(newChild)
-		const childInfo: ChildData = {
+		const childInfo: MoveData = {
 			id: id,
 			move: move,
             piece: piece
@@ -42,27 +41,27 @@ const SaveButton = (): JSX.Element => {
         }
 
         let id: string = boardOrientation === "white" ? user.whiteRootID : user.blackRootID
-        let childData: ChildData[] = await getChildren(id)
+        let childData: MoveData[] = await getChildren(id)
 
         for (let i = 0; i < moves.length; i++) {
             let hasChildren: boolean = (childData.length > 0) ? true : false
-            const piece: string = pieces[i];
+            const piece: string = moves[i].piece;
             if (hasChildren) {
                 let broken: boolean = false
                 for (let j = 0; j < childData.length; j++) {
-                    if (childData[j].move === moves[i]) {
+                    if (childData[j].move === moves[i].move) {
                         id = childData[j].id
                         childData = await getChildren(id)
                         broken = true
                         break
                     }
                 }
-                if (!broken) id = await createChild(id, moves[i], piece)
+                if (!broken) id = await createChild(id, moves[i].move, piece)
             } else {
-                id = await createChild(id, moves[i], piece)
+                id = await createChild(id, moves[i].move, piece)
             }
         }
-        dispatch(reset())
+        dispatch(reset(await getRootMove(boardOrientation, user)));
     }
 
     return (

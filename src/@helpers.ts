@@ -1,5 +1,5 @@
 import { Chess } from "chess.js";
-import { ChildData, Move, Orientation, User } from "./@constants";
+import { MoveData, Move, Orientation, User } from "./@constants";
 
 export const safeGameMutate = (
    game: Chess,
@@ -11,7 +11,7 @@ export const safeGameMutate = (
 };
 
 export const fetchMove = async (id: string): Promise<Move> => {
-   return fetch(`/data/${id}`).then((res) => res.json());
+   return fetch(`/api/data/${id}`).then((res) => res.json());
 };
 
 export async function postMove(data: Object) {
@@ -24,8 +24,8 @@ export async function postMove(data: Object) {
    }).then((res) => res.json());
 }
 
-export async function getChildren(id: string): Promise<ChildData[]> {
-   let childData: ChildData[] = [];
+export async function getChildren(id: string): Promise<MoveData[]> {
+   let childData: MoveData[] = [];
    await fetch(`/api/data/${id}`)
       .then((res) => res.json())
       .then((data) => {

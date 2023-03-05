@@ -4,15 +4,17 @@ export interface User {
    blackRootID: string;
 }
 
+export interface MoveData {
+   id: string;
+   move: string;
+   piece: string;
+}
+
 export interface Move {
    move: string;
    parentID: string;
    piece: string;
-   childData: {
-      id: string;
-      move: string;
-      piece: string;
-   }[];
+   childData: MoveData[];
 }
 
 export interface MoveInfo {
@@ -28,10 +30,4 @@ export enum AppState {
 export enum Orientation {
    white = "white",
    black = "black",
-}
-
-export interface ChildData {
-   id: string;
-   move: string;
-   piece: string;
 }

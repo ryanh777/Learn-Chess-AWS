@@ -1,45 +1,56 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { MoveInfo, Orientation } from "../../@constants";
+import { Move, MoveData, Orientation } from "../../@constants";
 import { RootState } from "../store";
 
 interface BoardState {
-    moves: string[];
-    pieces: string[];
+    moveData: MoveData[];
     boardOrientation: Orientation;
+    prevMove: Move;
 }
 
 const initialState: BoardState = {
-    moves: [],
-    pieces: [],
-    boardOrientation: Orientation.white
+    moveData: [],
+    boardOrientation: Orientation.white,
+    prevMove: {
+        move: "",
+        parentID: "",
+        piece: "",
+        childData: [],
+    }
 }
 
 export const boardSlice = createSlice({
     name: 'board',
     initialState,
     reducers: {
-        drop: (state, action: PayloadAction<MoveInfo>) => {
-            state.moves.push(action.payload.move);
-            state.pieces.push(action.payload.piece)
+        drop: (state, action: PayloadAction<MoveData>) => {
+            state.moveData.push(action.payload);
         },
-        reset: (state) => {
-            state.moves = [];
-            state.pieces = [];
+        reset: (state, action: PayloadAction<Move>) => {
+            state.moveData = [];
+            state.prevMove = action.payload;
         },
-        flip: (state) => {
-            state.moves = [];
-            state.pieces = [];
+        flip: (state, action: PayloadAction<Move>) => {
+            state.moveData = [];
+            state.prevMove = action.payload;
             state.boardOrientation == Orientation.white ? 
                 state.boardOrientation = Orientation.black : state.boardOrientation = Orientation.white 
         },
-        undo: (state) => {
-            state.moves.pop();
-            state.pieces.pop();
+        undo: (state, action: PayloadAction<Move>) => {
+            state.moveData.pop();
+            state.prevMove = action.payload;
+        },
+        setPrevMove: (state, action: PayloadAction<Move>) => {
+            state.prevMove = action.payload;
+        },
+        updateGame: (state, action: PayloadAction<{moveData: MoveData, prevMove: Move}>) => {
+            state.moveData.push(action.payload.moveData);
+            state.prevMove = action.payload.prevMove;
         }
     }
 })
 
-export const { drop, reset, flip, undo } = boardSlice.actions
+export const { drop, reset, flip, undo, setPrevMove, updateGame } = boardSlice.actions
 
 export const selectBoard = (state: RootState) => state.board
 

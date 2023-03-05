@@ -1,12 +1,14 @@
 import { TiChevronLeft } from 'react-icons/ti'
-import { useAppDispatch } from '../redux/hooks';
+import { fetchMove } from '../@helpers';
+import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import { undo } from '../redux/slices/board';
 
 const UndoButton = () => {
     const dispatch = useAppDispatch();
+    const prevMove = useAppSelector((state) => state.board.prevMove);
 
     const handleClick = async () => {
-        dispatch(undo())
+        dispatch(undo(await fetchMove(prevMove.parentID)));
     }
 
     return (

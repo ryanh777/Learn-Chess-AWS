@@ -1,12 +1,15 @@
 import { AiOutlineClear } from 'react-icons/ai'
-import { useAppDispatch } from '../redux/hooks';
+import { getRootMove } from '../@helpers';
+import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import { reset } from '../redux/slices/board';
 
 const ResetButton = () => {
     const dispatch = useAppDispatch();
+    const boardOrientation = useAppSelector((state) => state.board.boardOrientation);
+    const user = useAppSelector((state) => state.user);
 
     const handleClick = async () => {
-        dispatch(reset())
+        dispatch(reset(await getRootMove(boardOrientation, user)))
     }
 
     return (

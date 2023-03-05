@@ -1,12 +1,15 @@
 import { useEffect, useState } from 'react';
 import { Chessboard } from 'react-chessboard';
-import { Chess, Move, Square } from 'chess.js'
+import { Chess, Move as ChessMove, Square } from 'chess.js'
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
-import { drop } from '../redux/slices/board';
+import { drop, setPrevMove } from '../redux/slices/board';
+import { fetchMove } from '../@helpers';
+import { Move } from '../@constants';
 
 const ChessboardContainer = () => {
-    const moves = useAppSelector((state) => state.board.moves);
+    const moves = useAppSelector((state) => state.board.moveData);
     const boardOrientation = useAppSelector((state) => state.board.boardOrientation);
+    const prevMove = useAppSelector((state) => state.board.prevMove);
     const [game, setGame] = useState(new Chess());
     const dispatch = useAppDispatch();
     const [boardWidth, setBoardWidth] = useState<number>(Math.min(window.innerHeight, window.innerWidth) * .95)
@@ -25,20 +28,49 @@ const ChessboardContainer = () => {
     useEffect(() => {
         let newGame: Chess = new Chess()
         moves.forEach((move) => {
-            newGame.move(move);
+            newGame.move(move.move);
         })
         setGame(newGame)
     }, [moves])
 
     const onDrop = (sourceSquare: Square, targetSquare: Square): boolean => {
-        let move: Move | null = game.move({
+        let move: ChessMove | null = game.move({
             from: sourceSquare,
             to: targetSquare,
             promotion: "q"
         });
         if (move == null) return false;
-        dispatch(drop({ move: move.san, piece: (move.color.concat(move.piece))}))
+        let moveID: string = "";
+        if (prevMove.childData) {
+            for (const moveData of prevMove.childData) {
+                if (moveData.move == move.san) moveID = moveData.id; break;
+            }
+        }
+        dispatch(drop({ move: move.san, piece: move.color.concat(move.piece), id: moveID}))
+        updatePrevMove(move.san);
         return true;
+    }
+
+    const updatePrevMove = async (lastMove: string) => {
+        let userMoveID: string = ""
+        for (let i in prevMove.childData) {
+            if (prevMove.childData[i].move === lastMove) {
+                userMoveID = prevMove.childData[i].id
+                break
+            }
+        }
+        if (userMoveID === "") {
+            const move: Move = {
+                move: lastMove,
+                parentID: "",
+                piece: "",
+                childData: []
+            }
+            dispatch(setPrevMove(move))
+            return
+        }
+        const move: Move = await fetchMove(userMoveID)
+        dispatch(setPrevMove(move))
     }
 
     return (
@@ -51,7 +83,7 @@ const ChessboardContainer = () => {
                 customDarkSquareStyle={{backgroundColor: '#769656'}}
                 customLightSquareStyle={{backgroundColor: '#eeeed2'}}
                 customBoardStyle={{borderRadius: '5px'}}
-                />
+            />
         </div>
     )
 }

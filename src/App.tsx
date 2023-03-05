@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
+import { Move, User } from './@constants';
 import { postMove } from './@helpers';
 import MainContent from './components/mainContent';
 import Sidebar from './components/sidebar';
 import { useAppDispatch, useAppSelector } from './redux/hooks';
+import { setPrevMove } from './redux/slices/board';
 import { setUser } from './redux/slices/user';
 
 function App() {
@@ -23,7 +25,7 @@ function App() {
 				}
 			})
 			if (response.ok) {
-				dispatch(setUser(await response.json()));
+                dispatchLogin(await response.json());
 			}
 		}
 		fetchToken()
@@ -74,11 +76,11 @@ function App() {
             if (!response.ok) {
                 throw new Error(await response.text())
             } 
-            dispatch(setUser({
+            dispatchLogin({
                 username: username,
                 whiteRootID: user.whiteRootID,
                 blackRootID: user.blackRootID
-            }))
+            })
         } catch (err: any) {
             console.log(err)
             setError(err)
@@ -91,7 +93,6 @@ function App() {
 			password: password
 		}
         try {
-            console.log(JSON.stringify(user))
             const response = await fetch('/api/user/login', {
                 method: 'POST',
                 headers: {
@@ -103,20 +104,28 @@ function App() {
             if (!response.ok) throw new Error(await response.text())
       
             const token: string | null = response.headers.get('auth-token')
-      
             if (!token) throw new Error("token returned null")
-      
             localStorage.setItem('token', token)
+
             const filteredResponse = await response.json()
-            dispatch(setUser({
+            dispatchLogin({
                 username: username,
                 whiteRootID: filteredResponse.whiteRootID,
-                blackRootID: filteredResponse.blackRootID
-            }))
+                blackRootID: filteredResponse.blackRootID,
+            })
         } catch (err: any) {
             console.log(err)
             setError(err.message)
         }
+    }
+
+    const dispatchLogin = async (
+        user: User
+    ) => {
+        const rootMove: Move = await fetch(`/api/data/${user.whiteRootID}`)
+        .then((res) => res.json())
+        dispatch(setPrevMove(rootMove));
+        dispatch(setUser(user));
     }
 	
 	return (
