@@ -4,7 +4,7 @@ import { fetchMove, postMove } from './@helpers';
 import MainContent from './components/mainContent';
 import Sidebar from './components/sidebar';
 import { useAppDispatch, useAppSelector } from './redux/hooks';
-import { resetAndSetWhiteRootMove, resetAndSetBlackRootMove } from './redux/slices/board';
+import { resetAndSetWhiteRootMove, resetAndSetBlackRootMove, setPrevMoveToRoot } from './redux/slices/board';
 import { setUser } from './redux/slices/user';
 
 function App() {
@@ -126,6 +126,7 @@ function App() {
         const blackRootMove: Move = await fetchMove(user.blackRootID);
         dispatch(resetAndSetWhiteRootMove(whiteRootMove));
         dispatch(resetAndSetBlackRootMove(blackRootMove));
+        dispatch(setPrevMoveToRoot())
         dispatch(setUser(user));
     }
 	
