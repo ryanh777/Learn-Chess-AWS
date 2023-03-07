@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import { Move, User } from './@constants';
-import { postMove } from './@helpers';
+import { fetchMove, postMove } from './@helpers';
 import MainContent from './components/mainContent';
 import Sidebar from './components/sidebar';
 import { useAppDispatch, useAppSelector } from './redux/hooks';
-import { setPrevMove } from './redux/slices/board';
+import { setWhiteRootMove, setBlackRootMove } from './redux/slices/board';
 import { setUser } from './redux/slices/user';
 
 function App() {
@@ -122,9 +122,10 @@ function App() {
     const dispatchLogin = async (
         user: User
     ) => {
-        const rootMove: Move = await fetch(`/api/data/${user.whiteRootID}`)
-        .then((res) => res.json())
-        dispatch(setPrevMove(rootMove));
+        const whiteRootMove: Move = await fetchMove(user.whiteRootID);
+        const blackRootMove: Move = await fetchMove(user.blackRootID);
+        dispatch(setWhiteRootMove(whiteRootMove));
+        dispatch(setBlackRootMove(blackRootMove));
         dispatch(setUser(user));
     }
 	

@@ -1,8 +1,8 @@
 import { RiSave3Fill } from 'react-icons/ri'
-import { MoveData } from '../@constants'
+import { Move, MoveData, Orientation } from '../@constants'
 import { getChildren, getRootMove, postMove } from '../@helpers'
 import { useAppDispatch, useAppSelector } from '../redux/hooks'
-import { reset } from '../redux/slices/board'
+import { reset, setBlackRootMove, setWhiteRootMove } from '../redux/slices/board'
 
 const SaveButton = (): JSX.Element => {
     const dispatch = useAppDispatch();
@@ -13,7 +13,6 @@ const SaveButton = (): JSX.Element => {
     const createChild = async (parentID: string, move: string, piece: string): Promise<string> => {
 		const newChild = {
 			move: move,
-			parentID: parentID,
             piece: piece
 		}
 		const id = await postMove(newChild)
@@ -45,7 +44,6 @@ const SaveButton = (): JSX.Element => {
 
         for (let i = 0; i < moves.length; i++) {
             let hasChildren: boolean = (childData.length > 0) ? true : false
-            const piece: string = moves[i].piece;
             if (hasChildren) {
                 let broken: boolean = false
                 for (let j = 0; j < childData.length; j++) {
@@ -56,12 +54,17 @@ const SaveButton = (): JSX.Element => {
                         break
                     }
                 }
-                if (!broken) id = await createChild(id, moves[i].move, piece)
+                if (!broken) id = await createChild(id, moves[i].move, moves[i].piece)
             } else {
-                id = await createChild(id, moves[i].move, piece)
+                id = await createChild(id, moves[i].move, moves[i].piece)
             }
         }
-        dispatch(reset(await getRootMove(boardOrientation, user)));
+        dispatch(reset());
+        const rootMove: Move = await getRootMove(boardOrientation, user);
+        boardOrientation == Orientation.white ? 
+            dispatch(setWhiteRootMove(rootMove))
+        :  
+            dispatch(setBlackRootMove(rootMove))
     }
 
     return (

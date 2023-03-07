@@ -2,17 +2,28 @@ import { useEffect, useState } from 'react';
 import { Chessboard } from 'react-chessboard';
 import { Chess, Move as ChessMove, Square } from 'chess.js'
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
-import { drop, setPrevMove } from '../redux/slices/board';
+import { makeMove, moveHadChild } from '../redux/slices/board';
 import { fetchMove } from '../@helpers';
-import { Move } from '../@constants';
+import { Move, Orientation } from '../@constants';
 
 const ChessboardContainer = () => {
     const moves = useAppSelector((state) => state.board.moveData);
+    const index = useAppSelector((state) => state.board.index);
+    const whiteRootMove = useAppSelector((state) => state.board.whiteRoot);
+    const blackRootMove = useAppSelector((state) => state.board.blackRoot);
     const boardOrientation = useAppSelector((state) => state.board.boardOrientation);
-    const prevMove = useAppSelector((state) => state.board.prevMove);
     const [game, setGame] = useState(new Chess());
     const dispatch = useAppDispatch();
     const [boardWidth, setBoardWidth] = useState<number>(Math.min(window.innerHeight, window.innerWidth) * .95)
+    
+    let prevMove: Move;
+    moves[index] ? 
+        prevMove = moves[index] 
+    : 
+        boardOrientation == Orientation.white ?
+            prevMove = whiteRootMove
+        : 
+            prevMove = blackRootMove
 
     const setBW = () => {
         setBoardWidth(Math.min(window.innerHeight, window.innerWidth) * .95)
@@ -27,50 +38,42 @@ const ChessboardContainer = () => {
 
     useEffect(() => {
         let newGame: Chess = new Chess()
-        moves.forEach((move) => {
-            newGame.move(move.move);
-        })
+        for (let i = 0; i < index + 1; i++) {
+            newGame.move(moves[i].move)
+        }
         setGame(newGame)
-    }, [moves])
+    }, [index])
 
     const onDrop = (sourceSquare: Square, targetSquare: Square): boolean => {
-        let move: ChessMove | null = game.move({
+        let attemptedMove: ChessMove | null = game.move({
             from: sourceSquare,
             to: targetSquare,
             promotion: "q"
         });
-        if (move == null) return false;
-        let moveID: string = "";
-        if (prevMove.childData) {
-            for (const moveData of prevMove.childData) {
-                if (moveData.move == move.san) moveID = moveData.id; break;
-            }
-        }
-        dispatch(drop({ move: move.san, piece: move.color.concat(move.piece), id: moveID}))
-        updatePrevMove(move.san);
+        if (attemptedMove == null) return false;
+        
+        dispatch(makeMove({
+            id: "",
+            move: attemptedMove.san,
+            piece: attemptedMove.color.concat(attemptedMove.piece),
+            childData: []
+        }))
+        checkIfMoveHadChildren(attemptedMove);
         return true;
     }
 
-    const updatePrevMove = async (lastMove: string) => {
+    const checkIfMoveHadChildren = async (lastMove: ChessMove) => {
         let userMoveID: string = ""
         for (let i in prevMove.childData) {
-            if (prevMove.childData[i].move === lastMove) {
+            if (prevMove.childData[i].move === lastMove.san) {
                 userMoveID = prevMove.childData[i].id
                 break
             }
         }
-        if (userMoveID === "") {
-            const move: Move = {
-                move: lastMove,
-                parentID: "",
-                piece: "",
-                childData: []
-            }
-            dispatch(setPrevMove(move))
-            return
+        if (userMoveID != "") {
+            const move: Move = await fetchMove(userMoveID)
+            dispatch(moveHadChild(move))
         }
-        const move: Move = await fetchMove(userMoveID)
-        dispatch(setPrevMove(move))
     }
 
     return (

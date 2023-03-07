@@ -11,8 +11,8 @@ export interface MoveData {
 }
 
 export interface Move {
+   id: string;
    move: string;
-   parentID: string;
    piece: string;
    childData: MoveData[];
 }

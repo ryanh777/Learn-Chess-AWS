@@ -3,54 +3,79 @@ import { Move, MoveData, Orientation } from "../../@constants";
 import { RootState } from "../store";
 
 interface BoardState {
-    moveData: MoveData[];
+    moveData: Move[];
     boardOrientation: Orientation;
-    prevMove: Move;
+    whiteRoot: Move;
+    blackRoot: Move;
+    index: number;
 }
 
 const initialState: BoardState = {
     moveData: [],
     boardOrientation: Orientation.white,
-    prevMove: {
+    whiteRoot: {
+        id: "",
         move: "",
-        parentID: "",
         piece: "",
-        childData: [],
-    }
+        childData: []
+    },
+    blackRoot: {
+        id: "",
+        move: "",
+        piece: "",
+        childData: []
+    },
+    index: -1
 }
 
 export const boardSlice = createSlice({
     name: 'board',
     initialState,
     reducers: {
-        drop: (state, action: PayloadAction<MoveData>) => {
-            state.moveData.push(action.payload);
+        makeMove: (state, action: PayloadAction<Move>) => {
+            if (state.index + 1 == state.moveData.length) {   
+                state.moveData.push(action.payload);
+                state.index++;
+            }
+            if (state.index + 1 < state.moveData.length) {
+                if (state.moveData[state.index + 1] == action.payload) {
+                    state.index++;
+                } else {
+                    while(state.index + 1 < state.moveData.length) state.moveData.pop();
+                    state.moveData.push(action.payload);
+                    state.index++;
+                }
+            }
         },
-        reset: (state, action: PayloadAction<Move>) => {
+        reset: (state) => {
             state.moveData = [];
-            state.prevMove = action.payload;
+            state.index = -1;
         },
-        flip: (state, action: PayloadAction<Move>) => {
+        flip: (state) => {
             state.moveData = [];
-            state.prevMove = action.payload;
+            state.index = -1;
             state.boardOrientation == Orientation.white ? 
                 state.boardOrientation = Orientation.black : state.boardOrientation = Orientation.white 
         },
-        undo: (state, action: PayloadAction<Move>) => {
-            state.moveData.pop();
-            state.prevMove = action.payload;
+        undo: (state) => {
+            if (state.index > -1) state.index--;
         },
-        setPrevMove: (state, action: PayloadAction<Move>) => {
-            state.prevMove = action.payload;
+        redo: (state) => {
+            if (state.index + 1 < state.moveData.length) state.index++;
         },
-        updateGame: (state, action: PayloadAction<{moveData: MoveData, prevMove: Move}>) => {
-            state.moveData.push(action.payload.moveData);
-            state.prevMove = action.payload.prevMove;
+        setWhiteRootMove: (state, action: PayloadAction<Move>) => {
+            state.whiteRoot = action.payload;
+        },
+        setBlackRootMove: (state, action: PayloadAction<Move>) => {
+            state.blackRoot = action.payload;
+        },
+        moveHadChild: (state, action: PayloadAction<Move>) => {
+            state.moveData[state.index] = action.payload;
         }
     }
 })
 
-export const { drop, reset, flip, undo, setPrevMove, updateGame } = boardSlice.actions
+export const { makeMove, reset, flip, undo, redo, setWhiteRootMove, setBlackRootMove, moveHadChild } = boardSlice.actions
 
 export const selectBoard = (state: RootState) => state.board
 

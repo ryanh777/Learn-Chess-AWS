@@ -1,7 +1,7 @@
-import { MoveData, Move } from '../@constants'
+import { MoveData, Move, Orientation } from '../@constants'
 import { fetchMove } from '../@helpers'
 import { useAppDispatch, useAppSelector } from '../redux/hooks'
-import { updateGame } from '../redux/slices/board'
+import { makeMove } from '../redux/slices/board'
 
 interface Props {
     child: MoveData
@@ -9,7 +9,20 @@ interface Props {
 
 const MoveButton = (props: Props) => {
    const dispatch = useAppDispatch();
-   const prevMove = useAppSelector((state) => state.board.prevMove);
+   const moves = useAppSelector((state) => state.board.moveData);
+   const index = useAppSelector((state) => state.board.index);
+   const boardOrientation = useAppSelector((state) => state.board.boardOrientation);
+   const whiteRootMove = useAppSelector((state) => state.board.whiteRoot);
+   const blackRootMove = useAppSelector((state) => state.board.blackRoot);
+
+   let prevMove: Move;
+   moves[index] ? 
+      prevMove = moves[index] 
+   : 
+      boardOrientation == Orientation.white ?
+         prevMove = whiteRootMove
+      : 
+         prevMove = blackRootMove
 
    const handleClick = async () => { 
       let move: Move | undefined;
@@ -19,7 +32,7 @@ const MoveButton = (props: Props) => {
          }
       }
       if (move) {
-         dispatch(updateGame({moveData: props.child, prevMove: move}));
+         dispatch(makeMove(move));
       }
    }
 
