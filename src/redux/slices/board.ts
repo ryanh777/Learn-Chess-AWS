@@ -111,11 +111,15 @@ export const boardSlice = createSlice({
         moveHadChild: (state, action: PayloadAction<Move>) => {
             state.moveData[state.index] = action.payload;
             state.prevMove = action.payload;
+        },
+        setIndex: (state, action: PayloadAction<number>) => {
+            state.index = action.payload;
+            state.prevMove = state.moveData[action.payload];
         }
     }
 })
 
-export const { makeMove, reset, flip, undo, redo, resetAndSetWhiteRootMove, resetAndSetBlackRootMove, moveHadChild } = boardSlice.actions
+export const { makeMove, reset, flip, undo, redo, resetAndSetWhiteRootMove, resetAndSetBlackRootMove, moveHadChild, setIndex } = boardSlice.actions
 
 export const selectBoard = (state: RootState) => state.board
 
