@@ -9,20 +9,7 @@ interface Props {
 
 const MoveButton = (props: Props) => {
    const dispatch = useAppDispatch();
-   const moves = useAppSelector((state) => state.board.moveData);
-   const index = useAppSelector((state) => state.board.index);
-   const boardOrientation = useAppSelector((state) => state.board.boardOrientation);
-   const whiteRootMove = useAppSelector((state) => state.board.whiteRoot);
-   const blackRootMove = useAppSelector((state) => state.board.blackRoot);
-
-   let prevMove: Move;
-   moves[index] ? 
-      prevMove = moves[index] 
-   : 
-      boardOrientation == Orientation.white ?
-         prevMove = whiteRootMove
-      : 
-         prevMove = blackRootMove
+   const prevMove = useAppSelector((state) => state.board.prevMove);
 
    const handleClick = async () => { 
       let move: Move | undefined;

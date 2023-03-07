@@ -8,6 +8,7 @@ interface BoardState {
     whiteRoot: Move;
     blackRoot: Move;
     index: number;
+    prevMove: Move;
 }
 
 const initialState: BoardState = {
@@ -25,7 +26,13 @@ const initialState: BoardState = {
         piece: "",
         childData: []
     },
-    index: -1
+    index: -1,
+    prevMove: {
+        id: "",
+        move: "",
+        piece: "",
+        childData: []
+    }
 }
 
 export const boardSlice = createSlice({
@@ -36,46 +43,79 @@ export const boardSlice = createSlice({
             if (state.index + 1 == state.moveData.length) {   
                 state.moveData.push(action.payload);
                 state.index++;
+                state.prevMove = state.moveData[state.index];
             }
             if (state.index + 1 < state.moveData.length) {
                 if (state.moveData[state.index + 1] == action.payload) {
                     state.index++;
-                } else {
+                    state.prevMove = state.moveData[state.index];
+            } else {
                     while(state.index + 1 < state.moveData.length) state.moveData.pop();
                     state.moveData.push(action.payload);
                     state.index++;
-                }
+                    state.prevMove = state.moveData[state.index];
+            }
             }
         },
         reset: (state) => {
             state.moveData = [];
             state.index = -1;
+            if (state.boardOrientation == Orientation.white) {
+                state.prevMove = state.whiteRoot;
+            } else {
+                state.prevMove = state.blackRoot;
+            }
         },
         flip: (state) => {
             state.moveData = [];
             state.index = -1;
-            state.boardOrientation == Orientation.white ? 
-                state.boardOrientation = Orientation.black : state.boardOrientation = Orientation.white 
+            if (state.boardOrientation == Orientation.white) {
+                state.boardOrientation = Orientation.black;
+                state.prevMove = state.blackRoot;
+            } else {
+                state.boardOrientation = Orientation.white;
+                state.prevMove = state.whiteRoot;
+            }
         },
         undo: (state) => {
-            if (state.index > -1) state.index--;
+            if (state.index > 0) {
+                state.index--;
+                state.prevMove = state.moveData[state.index];
+            } else if (state.index == 0) {
+                state.index--;
+                if (state.boardOrientation == Orientation.white) {
+                    state.prevMove = state.whiteRoot;
+                } else {
+                    state.prevMove = state.blackRoot;
+                }
+            }
         },
         redo: (state) => {
-            if (state.index + 1 < state.moveData.length) state.index++;
+            if (state.index + 1 < state.moveData.length) {
+                state.index++;
+                state.prevMove = state.moveData[state.index];
+            }
         },
-        setWhiteRootMove: (state, action: PayloadAction<Move>) => {
+        resetAndSetWhiteRootMove: (state, action: PayloadAction<Move>) => {
+            state.moveData = [];
+            state.index = -1;
             state.whiteRoot = action.payload;
+            state.prevMove = action.payload;
         },
-        setBlackRootMove: (state, action: PayloadAction<Move>) => {
+        resetAndSetBlackRootMove: (state, action: PayloadAction<Move>) => {
+            state.moveData = [];
+            state.index = -1;
             state.blackRoot = action.payload;
+            state.prevMove = action.payload;
         },
         moveHadChild: (state, action: PayloadAction<Move>) => {
             state.moveData[state.index] = action.payload;
+            state.prevMove = action.payload;
         }
     }
 })
 
-export const { makeMove, reset, flip, undo, redo, setWhiteRootMove, setBlackRootMove, moveHadChild } = boardSlice.actions
+export const { makeMove, reset, flip, undo, redo, resetAndSetWhiteRootMove, resetAndSetBlackRootMove, moveHadChild } = boardSlice.actions
 
 export const selectBoard = (state: RootState) => state.board
 

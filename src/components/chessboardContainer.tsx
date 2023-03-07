@@ -7,23 +7,13 @@ import { fetchMove } from '../@helpers';
 import { Move, Orientation } from '../@constants';
 
 const ChessboardContainer = () => {
+    const dispatch = useAppDispatch();
     const moves = useAppSelector((state) => state.board.moveData);
     const index = useAppSelector((state) => state.board.index);
-    const whiteRootMove = useAppSelector((state) => state.board.whiteRoot);
-    const blackRootMove = useAppSelector((state) => state.board.blackRoot);
     const boardOrientation = useAppSelector((state) => state.board.boardOrientation);
+    const prevMove = useAppSelector((state) => state.board.prevMove);
     const [game, setGame] = useState(new Chess());
-    const dispatch = useAppDispatch();
     const [boardWidth, setBoardWidth] = useState<number>(Math.min(window.innerHeight, window.innerWidth) * .95)
-    
-    let prevMove: Move;
-    moves[index] ? 
-        prevMove = moves[index] 
-    : 
-        boardOrientation == Orientation.white ?
-            prevMove = whiteRootMove
-        : 
-            prevMove = blackRootMove
 
     const setBW = () => {
         setBoardWidth(Math.min(window.innerHeight, window.innerWidth) * .95)

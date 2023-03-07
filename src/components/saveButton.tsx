@@ -2,7 +2,7 @@ import { RiSave3Fill } from 'react-icons/ri'
 import { Move, MoveData, Orientation } from '../@constants'
 import { getChildren, getRootMove, postMove } from '../@helpers'
 import { useAppDispatch, useAppSelector } from '../redux/hooks'
-import { reset, setBlackRootMove, setWhiteRootMove } from '../redux/slices/board'
+import { resetAndSetBlackRootMove, resetAndSetWhiteRootMove } from '../redux/slices/board'
 
 const SaveButton = (): JSX.Element => {
     const dispatch = useAppDispatch();
@@ -59,12 +59,11 @@ const SaveButton = (): JSX.Element => {
                 id = await createChild(id, moves[i].move, moves[i].piece)
             }
         }
-        dispatch(reset());
         const rootMove: Move = await getRootMove(boardOrientation, user);
         boardOrientation == Orientation.white ? 
-            dispatch(setWhiteRootMove(rootMove))
+            dispatch(resetAndSetWhiteRootMove(rootMove))
         :  
-            dispatch(setBlackRootMove(rootMove))
+            dispatch(resetAndSetBlackRootMove(rootMove))
     }
 
     return (
