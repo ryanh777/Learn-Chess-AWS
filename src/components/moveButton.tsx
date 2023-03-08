@@ -1,7 +1,7 @@
 import { MoveData, Move } from '../@constants'
 import { fetchMove } from '../@helpers'
 import { useAppDispatch, useAppSelector } from '../redux/hooks'
-import { makeMove } from '../redux/slices/board'
+import { editPrevMove, makeMove } from '../redux/slices/board'
 
 interface Props {
     child: MoveData
@@ -13,14 +13,23 @@ const MoveButton = (props: Props) => {
    const deleteActive = useAppSelector((state) => state.moves.deleteActive);
 
    const handleClick = async () => { 
-      let move: Move | undefined;
+      let childDataMinusRemovedMove: MoveData[] = [];
       for (let i = 0; i < prevMove.childData.length; i++) {
          if (prevMove.childData[i].move === props.child.move) {
-            move = await fetchMove(prevMove.childData[i].id);
+            const move = await fetchMove(prevMove.childData[i].id);
+            if (!deleteActive) {
+               dispatch(makeMove(move));
+               return;
+            }
+            deleteMove(move);
+            continue;
          }
+         childDataMinusRemovedMove.push(prevMove.childData[i]);
       }
-      if (!move) return;
-      deleteActive ? deleteMove(move) : dispatch(makeMove(move));
+      dispatch(editPrevMove({
+         ...prevMove,
+         childData: childDataMinusRemovedMove
+      }))
    }
 
    const deleteMove = async (move: Move) => {

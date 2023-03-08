@@ -2,7 +2,7 @@ import { RiSave3Fill } from 'react-icons/ri'
 import { Move, MoveData, Orientation } from '../@constants'
 import { getChildren, getRootMove, postMove } from '../@helpers'
 import { useAppDispatch, useAppSelector } from '../redux/hooks'
-import { resetAndSetBlackRootMove, resetAndSetWhiteRootMove } from '../redux/slices/board'
+import { resetAndSetBlackRootMove, resetAndSetWhiteRootMove, setPrevMoveToRoot } from '../redux/slices/board'
 
 const SaveButton = (): JSX.Element => {
     const dispatch = useAppDispatch();
@@ -64,6 +64,7 @@ const SaveButton = (): JSX.Element => {
             dispatch(resetAndSetWhiteRootMove(rootMove))
         :  
             dispatch(resetAndSetBlackRootMove(rootMove))
+        dispatch(setPrevMoveToRoot())
     }
 
     return (

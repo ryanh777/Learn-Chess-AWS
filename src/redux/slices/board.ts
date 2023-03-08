@@ -120,11 +120,34 @@ export const boardSlice = createSlice({
             } else {
                 state.prevMove = state.blackRoot
             }
+        },
+        editPrevMove: (state, action: PayloadAction<Move>) => {
+            if (state.index == -1) {
+                if (state.boardOrientation == Orientation.white) {
+                    state.whiteRoot = action.payload;
+                } else {
+                    state.blackRoot = action.payload;
+                }
+            }
+            state.moveData[state.index] = action.payload;
+            state.prevMove = action.payload;
         }
     }
 })
 
-export const { makeMove, reset, flip, undo, redo, resetAndSetWhiteRootMove, resetAndSetBlackRootMove, moveHadChild, setIndex, setPrevMoveToRoot } = boardSlice.actions
+export const { 
+    makeMove, 
+    reset, 
+    flip, 
+    undo, 
+    redo, 
+    resetAndSetWhiteRootMove, 
+    resetAndSetBlackRootMove, 
+    moveHadChild, 
+    setIndex, 
+    setPrevMoveToRoot, 
+    editPrevMove 
+} = boardSlice.actions
 
 export const selectBoard = (state: RootState) => state.board
 
