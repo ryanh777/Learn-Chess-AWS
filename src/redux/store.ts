@@ -1,11 +1,13 @@
 import { configureStore } from "@reduxjs/toolkit";
 import userReducer from "./slices/user";
 import boardReducer from "./slices/board"
+import moveReducer from "./slices/moves"
 
 const store = configureStore({
     reducer: {
       user: userReducer,
-      board: boardReducer
+      board: boardReducer,
+      moves: moveReducer
     },
 })
 

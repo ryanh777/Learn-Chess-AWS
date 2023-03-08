@@ -8,6 +8,7 @@ module.exports = {
            bgsecondary: "#272522",
            bgtertiary: "#21201d",
            button: "#52514e",
+           buttonDelete: "#c30a03",
            buttonHover: "#83817c",
            textprimary: "#d4d3d3",
         },

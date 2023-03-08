@@ -114,7 +114,7 @@ function App() {
                 blackRootID: filteredResponse.blackRootID,
             })
         } catch (err: any) {
-            console.log(err)
+            console.log(err.message)
             setError(err.message)
         }
     }

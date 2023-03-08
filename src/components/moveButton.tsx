@@ -1,4 +1,4 @@
-import { MoveData, Move, Orientation } from '../@constants'
+import { MoveData, Move } from '../@constants'
 import { fetchMove } from '../@helpers'
 import { useAppDispatch, useAppSelector } from '../redux/hooks'
 import { makeMove } from '../redux/slices/board'
@@ -10,6 +10,7 @@ interface Props {
 const MoveButton = (props: Props) => {
    const dispatch = useAppDispatch();
    const prevMove = useAppSelector((state) => state.board.prevMove);
+   const deleteActive = useAppSelector((state) => state.moves.deleteActive);
 
    const handleClick = async () => { 
       let move: Move | undefined;
@@ -18,9 +19,18 @@ const MoveButton = (props: Props) => {
             move = await fetchMove(prevMove.childData[i].id);
          }
       }
-      if (move) {
-         dispatch(makeMove(move));
-      }
+      if (!move) return;
+      deleteActive ? deleteMove(move) : dispatch(makeMove(move));
+   }
+
+   const deleteMove = async (move: Move) => {
+      await fetch(`/api/data/${prevMove.id}`, {
+         method: "DELETE",
+         headers: {
+            "Content-Type": "application/json",
+         },
+         body: JSON.stringify(move)
+      });
    }
 
   return (

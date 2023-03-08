@@ -1,4 +1,5 @@
 import { useAppSelector } from "../redux/hooks"
+import DeleteButton from "./deleteButton"
 import FlipColorButton from "./flipColorButton"
 import GameHistoryNode from "./gameHistoryNode"
 import MoveButton from "./moveButton"
@@ -14,7 +15,8 @@ const CreateContainer = () => {
    return (
       <div className='flex flex-col flex-grow ml-6'>
          <div className='flex flex-col justify-between flex-grow mb-5 shadow-inner rounded-3xl bg-bgsecondary'>
-            <div className='flex items-center m-3 bg-bgtertiary justify-evenly basis-1/2 rounded-xl'>
+            <div className='relative flex items-center m-3 bg-bgtertiary justify-evenly basis-1/2 rounded-xl'>
+               <div className="absolute top-3 right-3"><DeleteButton/></div>
                {prevMove.childData.map((child, index) => 
                   <MoveButton key={index} child={child}/>
                )}
@@ -31,7 +33,7 @@ const CreateContainer = () => {
             </div>
          </div>
          <div className='flex h-24 p-3 bg-bgsecondary rounded-3xl'>
-            <div className="flex">
+            <div className="flex flex-grow">
                <UndoButton/>
                <RedoButton/>
             </div>
