@@ -1,10 +1,10 @@
 import { BsTrashFill } from 'react-icons/bs'
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
-import { flipDeleteState } from '../redux/slices/moves';
+import { flipDeleteState } from '../redux/slices/app';
 
 const DeleteButton = () => {
     const dispatch = useAppDispatch();
-    const deleteActive = useAppSelector((state) => state.moves.deleteActive);
+    const deleteActive = useAppSelector((state) => state.app.deleteActive);
 
     const handleClick = async () => {
         dispatch(flipDeleteState());

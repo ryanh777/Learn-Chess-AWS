@@ -10,7 +10,7 @@ interface Props {
 const MoveButton = (props: Props) => {
    const dispatch = useAppDispatch();
    const prevMove = useAppSelector((state) => state.board.prevMove);
-   const deleteActive = useAppSelector((state) => state.moves.deleteActive);
+   const deleteActive = useAppSelector((state) => state.app.deleteActive);
 
    const handleClick = async () => { 
       let childDataMinusRemovedMove: MoveData[] = [];
