@@ -1,21 +1,28 @@
+import { Chess } from 'chess.js';
 import { AiOutlineClear } from 'react-icons/ai'
 import { useAppDispatch } from '../redux/hooks';
 import { reset } from '../redux/slices/board';
 
-const ResetButton = () => {
-    const dispatch = useAppDispatch();
+interface props {
+   game: Chess,
+   setGame: React.Dispatch<React.SetStateAction<Chess>>
+}
 
-    const handleClick = async () => {
-        dispatch(reset())
-    }
+const ResetButton = (props: props) => {
+   const dispatch = useAppDispatch();
 
-    return (
-        <button
-            className="flex items-center justify-center flex-grow mr-1 text-lg bg-button rounded-xl hover:bg-buttonHover"
-            onClick={handleClick}>
-            {<AiOutlineClear size={36} />}
-        </button>
-    )
+   const handleClick = async () => {
+      dispatch(reset())
+      props.setGame(new Chess())
+   }
+
+   return (
+      <button
+         className="flex items-center justify-center flex-grow mr-1 text-lg bg-button rounded-xl hover:bg-buttonHover"
+         onClick={handleClick}>
+         {<AiOutlineClear size={36} />}
+      </button>
+   )
 }
 
 export default ResetButton

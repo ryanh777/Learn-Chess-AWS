@@ -1,3 +1,4 @@
+import { Chess } from 'chess.js';
 import { useEffect, useState } from 'react';
 import { Move, User } from './@constants';
 import { fetchMove, postMove } from './@helpers';
@@ -13,6 +14,7 @@ function App() {
    const [username, setUsername] = useState("");
    const [password, setPassword] = useState("");
    const [error, setError] = useState("");
+   const [game, setGame] = useState<Chess>(new Chess())
 
    useEffect(() => {
       const token = localStorage.getItem('token')
@@ -134,8 +136,8 @@ function App() {
       <div>
          {isLoggedIn ?
             <div className='flex items-center min-h-screen bg-bgprimary text-textprimary'>
-               <MainContent />
-               <Sidebar />
+               <MainContent game={game} setGame={setGame} />
+               <Sidebar game={game} setGame={setGame} />
             </div>
             :
             <div>

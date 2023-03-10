@@ -1,10 +1,16 @@
+import { Chess } from 'chess.js'
 import { RiSave3Fill } from 'react-icons/ri'
 import { Move, MoveData, Orientation } from '../@constants'
 import { getChildren, getRootMove, postMove } from '../@helpers'
 import { useAppDispatch, useAppSelector } from '../redux/hooks'
 import { resetAndSetBlackRootMove, resetAndSetWhiteRootMove, setPrevMoveToRoot } from '../redux/slices/board'
 
-const SaveButton = (): JSX.Element => {
+interface props {
+   game: Chess,
+   setGame: React.Dispatch<React.SetStateAction<Chess>>
+}
+
+const SaveButton = (props: props): JSX.Element => {
    const dispatch = useAppDispatch();
    const moves = useAppSelector((state) => state.board.moveData);
    const boardOrientation = useAppSelector((state) => state.board.boardOrientation);
@@ -66,6 +72,7 @@ const SaveButton = (): JSX.Element => {
          :
          dispatch(resetAndSetBlackRootMove(rootMove))
       dispatch(setPrevMoveToRoot())
+      props.setGame(new Chess())
    }
 
    return (

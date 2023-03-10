@@ -1,10 +1,13 @@
+import { Chess } from 'chess.js'
 import { MoveData, Move } from '../@constants'
-import { fetchMove } from '../@helpers'
+import { fetchMove, safeGameMutate } from '../@helpers'
 import { useAppDispatch, useAppSelector } from '../redux/hooks'
 import { editPrevMove, makeMove } from '../redux/slices/board'
 
 interface Props {
     child: MoveData
+    game: Chess
+    setGame: React.Dispatch<React.SetStateAction<Chess>>
 }
 
 const MoveButton = (props: Props) => {
@@ -16,12 +19,15 @@ const MoveButton = (props: Props) => {
       let childDataMinusRemovedMove: MoveData[] = [];
       for (let i = 0; i < prevMove.childData.length; i++) {
          if (prevMove.childData[i].move === props.child.move) {
-            const move = await fetchMove(prevMove.childData[i].id);
+            const fetchedMove: Move = await fetchMove(prevMove.childData[i].id);
             if (!deleteActive) {
-               dispatch(makeMove(move));
+               dispatch(makeMove(fetchedMove));
+               props.setGame(safeGameMutate(props.game, (game) => {
+                  game.move(fetchedMove.move);
+               }))
                return;
             }
-            deleteMove(move);
+            deleteMove(fetchedMove);
             continue;
          }
          childDataMinusRemovedMove.push(prevMove.childData[i]);

@@ -6,8 +6,14 @@ import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import { setAppState } from "../redux/slices/app";
 import { AppState } from "../@constants";
 import { reset } from "../redux/slices/board";
+import { Chess } from "chess.js";
 
-const Sidebar = () => {
+interface props {
+   game: Chess,
+   setGame: React.Dispatch<React.SetStateAction<Chess>>
+}
+
+const Sidebar = (props: props) => {
    const dispatch = useAppDispatch();
    const appState = useAppSelector((state) => state.app.appState);
    const moveData = useAppSelector((state) => state.board.moveData);
@@ -15,9 +21,10 @@ const Sidebar = () => {
    const index = useAppSelector((state) => state.board.index);
 
    const test = () => {
-      console.log("moveData:", moveData)
-      console.log("prevMove:", prevMove)
-      console.log("index", index);
+      // console.log("moveData:", moveData)
+      // console.log("prevMove:", prevMove)
+      // console.log("index", index);
+      console.log("game", props.game.history())
    }
    
    return (

@@ -1,13 +1,24 @@
-import { Chess } from "chess.js";
+import { Chess, Move as ChessMove } from "chess.js";
 import { MoveData, Move, Orientation, User } from "./@constants";
 
 export const safeGameMutate = (
    game: Chess,
    modify: (game: Chess) => void
 ): Chess => {
-   const update: Chess = Object.create(game);
-   modify(update);
-   return update;
+   const newGame: Chess = new Chess()
+   game.history().forEach((move) => newGame.move(move));
+   modify(newGame);
+   return newGame;
+};
+
+export const safeGameMutateReturnMove = (
+   game: Chess,
+   modify: (game: Chess) => ChessMove
+): { newGame: Chess, moveMade: ChessMove } => {
+   const newGame: Chess = new Chess()
+   game.history().forEach((move) => newGame.move(move));
+   const moveMade: ChessMove = modify(newGame);
+   return {newGame, moveMade};
 };
 
 export const fetchMove = async (id: string): Promise<Move> => {
