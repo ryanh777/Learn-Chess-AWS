@@ -33,6 +33,7 @@ const Sidebar = (props: props) => {
             onClick={() => {
                dispatch(setAppState(AppState.Create))
                dispatch(reset()) 
+               props.setGame(new Chess())
             }}>
             <AppStateButton active={appState == "create" ? true : false} icon={<IoMdCreate size={34} />}/>
          </div>
@@ -40,6 +41,7 @@ const Sidebar = (props: props) => {
             onClick={() => {
                dispatch(setAppState(AppState.Learn))
                dispatch(reset())
+               props.setGame(new Chess())
             }}>
             <AppStateButton active={appState == "learn" ? true : false} icon={<IoBook size={34} />}/>
          </div>

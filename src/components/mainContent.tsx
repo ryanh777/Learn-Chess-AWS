@@ -1,5 +1,6 @@
 import { Chess } from 'chess.js'
-import { useState } from 'react'
+import { AppState } from '../@constants'
+import { useAppSelector } from '../redux/hooks'
 import ChessboardContainer from './chessboardContainer'
 import CreateContainer from './createContainer'
 
@@ -9,12 +10,20 @@ interface props {
 }
 
 const MainContent = (props: props) => {
+   const appState = useAppSelector((state) => state.app.appState);
+
    return (
       <>
-         <div className="flex flex-grow">
-            <CreateContainer game={props.game} setGame={props.setGame} />
-            <ChessboardContainer game={props.game} setGame={props.setGame} />
-         </div>
+         {appState == AppState.Create ?
+            <div className="flex flex-grow">
+               <CreateContainer game={props.game} setGame={props.setGame} />
+               <ChessboardContainer game={props.game} setGame={props.setGame} />
+            </div>
+            :
+            <div className="flex flex-grow justify-center">
+               <ChessboardContainer game={props.game} setGame={props.setGame} />
+            </div>
+         }
       </>
    )
 }
