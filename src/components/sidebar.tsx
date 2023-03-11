@@ -21,10 +21,10 @@ const Sidebar = (props: props) => {
    const index = useAppSelector((state) => state.board.index);
 
    const test = () => {
-      // console.log("moveData:", moveData)
-      // console.log("prevMove:", prevMove)
-      // console.log("index", index);
-      console.log("game", props.game.history())
+      console.log("moveData:", moveData)
+      console.log("prevMove:", prevMove)
+      console.log("index", index);
+      console.log("game history", props.game.history())
    }
    
    return (
