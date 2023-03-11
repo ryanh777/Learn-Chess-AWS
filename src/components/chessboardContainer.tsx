@@ -2,9 +2,9 @@ import { useEffect, useState } from 'react';
 import { Chessboard } from 'react-chessboard';
 import { Chess, Move as ChessMove, Square } from 'chess.js'
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
-import { makeMove, moveHadChild } from '../redux/slices/board';
-import { fetchMove, safeGameMutate, safeGameMutateReturnMove } from '../@helpers';
-import { AppState, Move, MoveData, Orientation } from '../@constants';
+import { makeMove, reset } from '../redux/slices/board';
+import { safeGameMutate, safeGameMutateReturnMove } from '../@helpers';
+import { AppState, LearnFailState, Move, MoveData, Orientation } from '../@constants';
 import { determineMoveForHandleLearn, getMoveIfChildOfPrev } from '../handleLearnFuncs';
 
 interface props {
@@ -12,17 +12,10 @@ interface props {
    setGame: React.Dispatch<React.SetStateAction<Chess>>
 }
 
-interface gameData {
-   game: Chess
-   move: ChessMove
-}
-
 const ChessboardContainer = (props: props) => {
    const dispatch = useAppDispatch();
-   const moves = useAppSelector((state) => state.board.moveData);
-   const index = useAppSelector((state) => state.board.index);
    const boardOrientation = useAppSelector((state) => state.board.boardOrientation);
-   const [prevMove, setPrevMove] = useState<Move>(useAppSelector((state) => state.board.prevMove))
+   const prevMove = useAppSelector((state) => state.board.prevMove)
    const appState = useAppSelector((state) => state.app.appState);
    const [boardWidth, setBoardWidth] = useState<number>(Math.min(window.innerHeight, window.innerWidth) * .95)
 
@@ -53,7 +46,7 @@ const ChessboardContainer = (props: props) => {
       if (!gameData) return false;
 
       const move = gameData.moveMade;
-      if (appState == AppState.Learn) {
+      if (appState == AppState.learn) {
          handleLearn(gameData.newGame, move);
          return true;
       }
@@ -62,7 +55,23 @@ const ChessboardContainer = (props: props) => {
    }
 
    const handleLearn = async (game: Chess, move: ChessMove) => {
-      const autoMove: MoveData | undefined = await determineMoveForHandleLearn(boardOrientation, move, prevMove)
+      const autoMove: MoveData | LearnFailState = await determineMoveForHandleLearn(move, prevMove)
+
+      if (autoMove == LearnFailState.end) { 
+         setTimeout(() => {
+            props.setGame(new Chess())
+         }, 1000);
+         dispatch(reset())
+         return; 
+      }
+      if (autoMove == LearnFailState.incorrect) { 
+         setTimeout(() => {
+            props.setGame(safeGameMutate(game, (game) => {
+               game.undo();
+            }))
+         }, 600);
+         return; 
+      }
       if (!autoMove) { console.log("undefined"); return; }
 
       setTimeout(() => {
@@ -80,7 +89,6 @@ const ChessboardContainer = (props: props) => {
       const childMove: Move | undefined = await getMoveIfChildOfPrev(move, prevMove);
       if (childMove) {
          dispatch(makeMove(childMove))
-         setPrevMove(childMove);
          return childMove;
       } else {
          dispatch(makeMove({

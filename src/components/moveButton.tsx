@@ -29,7 +29,6 @@ const MoveButton = (props: Props) => {
                return;
             }
             if (!confirm(`Are you sure you want to delete ${fetchedMove.move} and all of its following moves?`)) return;
-            console.log('deleting')
             deleteMove(fetchedMove);
             continue;
          }

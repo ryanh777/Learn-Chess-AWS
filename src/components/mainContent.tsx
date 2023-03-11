@@ -14,7 +14,7 @@ const MainContent = (props: props) => {
 
    return (
       <>
-         {appState == AppState.Create ?
+         {appState == AppState.create ?
             <div className="flex flex-grow">
                <CreateContainer game={props.game} setGame={props.setGame} />
                <ChessboardContainer game={props.game} setGame={props.setGame} />

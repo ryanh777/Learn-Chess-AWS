@@ -23,8 +23,13 @@ export interface MoveInfo {
 }
 
 export enum AppState {
-   Learn = "learn",
-   Create = "create",
+   learn = "learn",
+   create = "create",
+}
+
+export enum LearnFailState {
+   incorrect,
+   end
 }
 
 export enum Orientation {
