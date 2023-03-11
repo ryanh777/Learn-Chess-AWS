@@ -9,7 +9,7 @@ interface AppStateType {
 
 const initialState: AppStateType = {
     deleteActive: false,
-    appState: AppState.Create
+    appState: AppState.create
 }
 
 export const appSlice = createSlice({
