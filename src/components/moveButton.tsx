@@ -2,6 +2,7 @@ import { Chess } from 'chess.js'
 import { MoveData, Move } from '../@constants'
 import { fetchMove, safeGameMutate } from '../@helpers'
 import { useAppDispatch, useAppSelector } from '../redux/hooks'
+import { flipDeleteState } from '../redux/slices/app'
 import { editPrevMove, makeMove } from '../redux/slices/board'
 
 interface Props {
@@ -27,6 +28,8 @@ const MoveButton = (props: Props) => {
                }))
                return;
             }
+            if (!confirm(`Are you sure you want to delete ${fetchedMove.move} and all of its following moves?`)) return;
+            console.log('deleting')
             deleteMove(fetchedMove);
             continue;
          }
@@ -36,6 +39,7 @@ const MoveButton = (props: Props) => {
          ...prevMove,
          childData: childDataMinusRemovedMove
       }))
+      dispatch(flipDeleteState())
    }
 
    const deleteMove = async (move: Move) => {
