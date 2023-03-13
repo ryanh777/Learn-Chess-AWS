@@ -17,6 +17,12 @@ export interface Move {
    childData: MoveData[];
 }
 
+export interface SavedMove {
+   user: string;
+   move: string;
+   piece: string;
+}
+
 export interface MoveInfo {
    move: string,
    piece: string

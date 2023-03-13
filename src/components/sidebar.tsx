@@ -4,7 +4,7 @@ import { IoBook } from 'react-icons/io5'
 import { GrTest } from 'react-icons/gr'
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import { setAppState } from "../redux/slices/app";
-import { AppState, Orientation, MoveData, Move } from "../@constants";
+import { AppState, Orientation, MoveData, Move, SavedMove } from "../@constants";
 import { makeMove, reset } from "../redux/slices/board";
 import { Chess } from "chess.js";
 import { getMoveIfChildOfPrev, getRandomInt } from "../handleLearnFuncs";
@@ -19,12 +19,13 @@ const Sidebar = (props: props) => {
    const appState = useAppSelector((state) => state.app.appState);
    const boardOrientation = useAppSelector((state) => state.board.boardOrientation);
    const blackRoot = useAppSelector((state) => state.board.blackRoot);
-
+   const user = useAppSelector((state) => state.user.username)
+   const whiteRootID = useAppSelector((state) => state.board.whiteRoot.id)
    const moveData = useAppSelector((state) => state.board.moveData);
    const prevMove = useAppSelector((state) => state.board.prevMove);
    const index = useAppSelector((state) => state.board.index);
 
-   const test = () => {
+   const test = async () => {
       console.log("moveData:", moveData)
       console.log("prevMove:", prevMove)
       console.log("index", index);

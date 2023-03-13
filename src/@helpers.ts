@@ -1,5 +1,5 @@
 import { Chess, Move as ChessMove } from "chess.js";
-import { MoveData, Move, Orientation, User } from "./@constants";
+import { MoveData, Move, Orientation, User, SavedMove } from "./@constants";
 
 export const safeGameMutate = (
    game: Chess,
@@ -26,13 +26,28 @@ export const fetchMove = async (id: string): Promise<Move> => {
 };
 
 export async function postMove(data: Object) {
-   return fetch("/api/data/", {
+   return fetch("/api/data/root", {
       method: "POST",
       headers: {
          "Content-Type": "application/json",
       },
       body: JSON.stringify(data),
    }).then((res) => res.json());
+}
+
+export async function postMoves(unsavedMoveList: SavedMove[], lastSavedMoveID: string): Promise<boolean> {
+   const data = {
+      moves: unsavedMoveList,
+      lastSavedMoveID: lastSavedMoveID
+   }
+   const resp = await fetch("/api/data/", {
+      method: "POST",
+      headers: {
+         "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+   })
+   return resp.ok
 }
 
 export async function getChildren(id: string): Promise<MoveData[]> {
