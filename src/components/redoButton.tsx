@@ -26,7 +26,7 @@ const RedoButton = (props: props) => {
       <button
          className="flex items-center justify-center flex-grow mr-1 text-lg bg-button rounded-xl hover:bg-buttonHover"
          onClick={handleClick}>
-         {<TiChevronRight size={40} />}
+         {<TiChevronRight size={36} />}
       </button>
 
    )

@@ -135,9 +135,10 @@ function App() {
    return (
       <div>
          {isLoggedIn ?
-            <div className='flex items-center min-h-screen bg-bgprimary text-textprimary'>
-               <MainContent game={game} setGame={setGame} />
+            // <div className='flex items-center min-h-screen bg-bgprimary text-textprimary'>
+            <div className='relative flex flex-col items-center min-h-screen bg-bgprimary text-textprimary'>
                <Sidebar game={game} setGame={setGame} />
+               <MainContent game={game} setGame={setGame} />
             </div>
             :
             <div>

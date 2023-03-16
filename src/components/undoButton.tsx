@@ -23,7 +23,7 @@ const UndoButton = (props: props) => {
       <button
          className="flex items-center justify-center flex-grow mr-1 text-lg bg-button rounded-xl hover:bg-buttonHover"
          onClick={handleClick}>
-         {<TiChevronLeft size={40} />}
+         {<TiChevronLeft size={36} />}
       </button>
 
    )

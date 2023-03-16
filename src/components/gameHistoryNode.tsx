@@ -3,14 +3,14 @@ import { Move } from '../@constants'
 import { useAppDispatch, useAppSelector } from '../redux/hooks'
 import { setIndex } from '../redux/slices/board'
 
-interface Props {
+interface props {
    move: Move
    count: number
    game: Chess
    setGame: React.Dispatch<React.SetStateAction<Chess>>
 }
 
-const GameHistoryNode = (props: Props) => {
+const GameHistoryNode = (props: props) => {
    const dispatch = useAppDispatch();
    const index = useAppSelector((state) => state.board.index);
    const moves = useAppSelector((state) => state.board.moveData);
