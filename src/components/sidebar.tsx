@@ -1,11 +1,8 @@
 import AppStateButton from "./appStateButton";
-import { IoMdCreate } from 'react-icons/io'
 import { IoBook, IoConstruct } from 'react-icons/io5'
-import { GrTest } from 'react-icons/gr'
-// import { GrTest } from '../icons'
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
-import app, { setAppState } from "../redux/slices/app";
-import { AppState, Orientation, MoveData, Move, SavedMove } from "../@constants";
+import { setAppState } from "../redux/slices/app";
+import { AppState, Orientation, MoveData, Move } from "../@constants";
 import { makeMove, reset } from "../redux/slices/board";
 import { Chess } from "chess.js";
 import { getMoveIfChildOfPrev, getRandomInt } from "../handleLearnFuncs";
@@ -34,8 +31,7 @@ const Sidebar = (props: props) => {
    }
 
    return (
-      // <div className='flex flex-col w-20 h-screen bg-bgtertiary'>
-      <div className='flex justify-around items-center w-screen bg-bgtertiary'>
+      <div className='flex lg:flex-col justify-around lg:justify-start items-center w-screen lg:w-20 lg:min-h-screen lg:pt-4 bg-bgtertiary'>
          {/* Create */}
          <div
             onClick={() => {
@@ -44,7 +40,7 @@ const Sidebar = (props: props) => {
                props.setGame(new Chess())
             }}>
             <AppStateButton active={appState == "create" ? true : false} icon={
-               appState == "create" ? <IoConstruct size={36}/> : <IoConstruct fill={"#83817c"} size={32}/>
+               appState == "create" ? <IoConstruct size={44}/> : <IoConstruct fill={"#83817c"} size={36}/>
             } />
          </div>
          {/* Learn */}
@@ -64,11 +60,11 @@ const Sidebar = (props: props) => {
                props.setGame(new Chess())
             }}>
             <AppStateButton active={appState == "learn" ? true : false} icon={
-               appState == "learn" ? <IoBook size={36} /> : <IoBook fill={"#83817c"} size={32} />
+               appState == "learn" ? <IoBook size={44} /> : <IoBook fill={"#83817c"} size={36} />
             } />
          </div>
          {/* Test */}
-         <div onClick={test}><AppStateButton active={false} icon={<GrTest fill="none" stroke="red" />} /></div>
+         {/* <div onClick={test}><AppStateButton active={false} icon={<GrTest fill="none" stroke="red" />} /></div> */}
       </div>
    )
 }

@@ -18,7 +18,7 @@ const ResetButton = (props: props) => {
 
    return (
       <button
-         className="flex items-center justify-center flex-grow mr-1 text-lg bg-button rounded-xl hover:bg-buttonHover"
+         className="flex items-center justify-center flex-grow mx-1 text-lg bg-button rounded-xl hover:bg-buttonHover"
          onClick={handleClick}>
          {<AiOutlineClear size={36} />}
       </button>

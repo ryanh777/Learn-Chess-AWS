@@ -11,15 +11,12 @@ const AppStateButton = (props: Props) => {
          {
             props.active ?
                <div
-                  // className='flex items-center justify-center h-12 m-2 rounded-xl bg-buttonHover'>
-                  className='p-1'>
+                  className='flex justify-center p-1 lg:mb-2'>
                   {props.icon}
                </div>
                :
                <div
-                  // className='flex items-center justify-center h-12 m-2 transition-all duration-100 ease-linear 
-                  // cursor-pointer rounded-3xl bg-button hover:bg-buttonHover hover:rounded-xl'>
-                  className='p-1.5'>
+                  className='flex justify-center p-2 lg:mb-2'>
                   {props.icon}
                </div>
          }

@@ -12,7 +12,7 @@ interface props {
 
 const BoardButtons = (props: props) => {
    return (
-      <div className='flex h-24 py-3 bg-bgsecondary'>
+      <div className='flex h-24 py-3 lg:p-3 rounded-3xl bg-bgsecondary'>
          <ResetButton game={props.game} setGame={props.setGame} />
          <SaveButton game={props.game} setGame={props.setGame} />
          <FlipColorButton game={props.game} setGame={props.setGame} />

@@ -17,10 +17,10 @@ const ChessboardContainer = (props: props) => {
    const boardOrientation = useAppSelector((state) => state.board.boardOrientation);
    const prevMove = useAppSelector((state) => state.board.prevMove)
    const appState = useAppSelector((state) => state.app.appState);
-   const [boardWidth, setBoardWidth] = useState<number>(Math.min(window.innerHeight, window.innerWidth))
+   const [boardWidth, setBoardWidth] = useState<number>(Math.min(window.innerHeight, window.innerWidth) * .95)
 
    const setBW = () => {
-      setBoardWidth(Math.min(window.innerHeight, window.innerWidth))
+      setBoardWidth(Math.min(window.innerHeight, window.innerWidth) * .95)
    }
 
    useEffect(() => {
