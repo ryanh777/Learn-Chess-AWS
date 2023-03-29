@@ -1,10 +1,10 @@
 import { Chess } from 'chess.js'
-import { Move } from '../@constants'
+import { LocalMove } from '../@constants'
 import { useAppDispatch, useAppSelector } from '../redux/hooks'
 import { setIndex } from '../redux/slices/board'
 
 interface props {
-   move: Move
+   move: LocalMove
    count: number
    game: Chess
    setGame: React.Dispatch<React.SetStateAction<Chess>>
@@ -13,21 +13,18 @@ interface props {
 const GameHistoryNode = (props: props) => {
    const dispatch = useAppDispatch();
    const index = useAppSelector((state) => state.board.index);
-   const moves = useAppSelector((state) => state.board.moveData);
+   const moveList = useAppSelector((state) => state.board.moveList);
 
    const handleClick = () => {
-      const newIndex: number = moves.length - props.count - 1;
+      const newIndex: number = moveList.length - props.count - 1;
       dispatch(setIndex(newIndex));
-      const newGame: Chess = new Chess();
-      for (let i = 0; i < newIndex + 1; i++) {
-         newGame.move(moves[i].move)
-      }
+      const newGame: Chess = new Chess(moveList[newIndex].fen);
       props.setGame(newGame)
    }
 
    return (
       <>
-         {props.count === moves.length - index - 1 ?
+         {props.count === moveList.length - index - 1 ?
             <div
                className="px-1 mx-1 text-lg rounded-sm bg-button h-min">
                {props.move.move}

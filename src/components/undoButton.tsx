@@ -1,7 +1,6 @@
 import { Chess } from 'chess.js';
 import { TiChevronLeft } from 'react-icons/ti'
-import { safeGameMutate } from '../@helpers';
-import { useAppDispatch } from '../redux/hooks';
+import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import { undo } from '../redux/slices/board';
 
 interface props {
@@ -11,12 +10,18 @@ interface props {
 
 const UndoButton = (props: props) => {
    const dispatch = useAppDispatch();
+   const moveList = useAppSelector((state) => state.board.moveList)
+   const index = useAppSelector((state) => state.board.index)
 
    const handleClick = async () => {
+      if (index < 0) return
+      if (index == 0) {
+         props.setGame(new Chess())
+      }
+      if (index > 0) {
+         props.setGame(new Chess(moveList[index-1].fen))
+      }
       dispatch(undo());
-      props.setGame(safeGameMutate(props.game, (game) => {
-         return game.undo()
-      }))
    }
 
    return (
@@ -25,7 +30,6 @@ const UndoButton = (props: props) => {
          onClick={handleClick}>
          {<TiChevronLeft size={36} />}
       </button>
-
    )
 }
 

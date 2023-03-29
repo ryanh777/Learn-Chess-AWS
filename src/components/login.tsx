@@ -1,149 +1,129 @@
 import { useEffect, useState } from "react";
-import { Move, User } from "../@constants";
-import { postMove, fetchMove } from "../@helpers";
+import { DBMove, User } from "../@constants";
+import { fetchPostionFromID, postMove } from "../@helpers";
 import { useAppDispatch } from "../redux/hooks";
-import { resetAndSetWhiteRootMove, resetAndSetBlackRootMove, setPrevMoveToRoot } from "../redux/slices/board";
+import { setRoot } from "../redux/slices/board";
 import { setUser } from "../redux/slices/user";
 
 const Login = () => {
-    const dispatch = useAppDispatch();
-    const [username, setUsername] = useState("");
-    const [password, setPassword] = useState("");
-    const [error, setError] = useState("");
+   const dispatch = useAppDispatch();
+   const [username, setUsername] = useState("");
+   const [password, setPassword] = useState("");
+   const [error, setError] = useState("");
 
    useEffect(() => {
-    const token = localStorage.getItem('token')
-    if (!token) return
-    const fetchToken = async () => {
-       const response = await fetch('/api/user', {
-          method: 'GET',
-          headers: {
-             'auth-token': `${token}`
-          }
-       })
-       if (response.ok) {
-          dispatchLogin(await response.json());
-       }
-    }
-    fetchToken()
- }, [])
+      const token = localStorage.getItem('token')
+      if (!token) return
+      const fetchToken = async () => {
+         const response = await fetch('/api/user', {
+            method: 'GET',
+            headers: {
+               'auth-token': `${token}`
+            }
+         })
+         if (response.ok) {
+             dispatchLogin(await response.json());
+         }
+      }
+      fetchToken()
+   }, [])
 
- const register = async () => {
-    try {
-       const response = await fetch('api/user/exists', {
-          method: 'POST',
-          headers: {
-             'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ username: username })
-       })
-       if (!response.ok) {
-          throw new Error(await response.text())
-       }
-    } catch (err: any) {
-       console.log(err)
-       setError(err.message)
-       return
-    }
+   const register = async () => {
+      try {
+         const userExistsResponse = await fetch('api/user/exists', {
+            method: 'POST',
+            headers: {
+               'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ username: username })
+         })
+         if (!userExistsResponse.ok) {
+            throw new Error(await userExistsResponse.text())
+         }
 
-    const whiteRoot = {
-       user: `${username}`,
-       move: "white-root",
-       piece: "root"
-    }
-    const blackRoot = {
-       user: `${username}`,
-       move: "black-root",
-       piece: "root"
-    }
-    const user = {
-       username: username,
-       password: password,
-       whiteRootID: await postMove(whiteRoot),
-       blackRootID: await postMove(blackRoot)
-    }
-    try {
-       const response = await fetch('/api/user/register', {
-          method: 'POST',
-          headers: {
-             'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(user),
-       })
-       if (!response.ok) {
-          throw new Error(await response.text())
-       }
-       dispatchLogin({
-          username: username,
-          whiteRootID: user.whiteRootID,
-          blackRootID: user.blackRootID
-       })
-    } catch (err: any) {
-       console.log(err)
-       setError(err)
-    }
- };
+         const rootPosition = {
+            user: username,
+            fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -",
+         }
 
- const login = async () => {
-    const user = {
-       username: username,
-       password: password
-    }
-    try {
-       const response = await fetch('/api/user/login', {
-          method: 'POST',
-          headers: {
-             'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(user),
-       })
+         const user = {
+            username: username,
+            password: password,
+            rootID: await postMove(rootPosition),
+         }
 
-       if (!response.ok) throw new Error(await response.text())
+         const registerUserResponse = await fetch('/api/user/register', {
+            method: 'POST',
+            headers: {
+               'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(user),
+         })
+         if (!registerUserResponse.ok) {
+            throw new Error(await registerUserResponse.text())
+         }
+         dispatchLogin({
+            username: username,
+            rootID: user.rootID,
+         })
+      } catch (err: any) {
+         setError(err.message)
+      }
+   };
 
-       const token: string | null = response.headers.get('auth-token')
-       if (!token) throw new Error("token returned null")
-       localStorage.setItem('token', token)
+   const login = async () => {
+      const user = {
+         username: username,
+         password: password
+      }
+      try {
+         const response = await fetch('/api/user/login', {
+            method: 'POST',
+            headers: {
+               'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(user),
+         })
 
-       const filteredResponse = await response.json()
-       dispatchLogin({
-          username: username,
-          whiteRootID: filteredResponse.whiteRootID,
-          blackRootID: filteredResponse.blackRootID,
-       })
-    } catch (err: any) {
-       console.log(err.message)
-       setError(err.message)
-    }
- }
+         if (!response.ok) throw new Error(await response.text())
 
- const dispatchLogin = async (
-    user: User
- ) => {
-    const whiteRootMove: Move = await fetchMove(user.whiteRootID);
-    const blackRootMove: Move = await fetchMove(user.blackRootID);
-    dispatch(resetAndSetWhiteRootMove(whiteRootMove));
-    dispatch(resetAndSetBlackRootMove(blackRootMove));
-    dispatch(setPrevMoveToRoot())
-    dispatch(setUser(user));
- }
+         const token: string | null = response.headers.get('auth-token')
+         if (!token) throw new Error("token returned null")
+         localStorage.setItem('token', token)
 
-    return (
-        <div>
-            <div>
-                Register:
-                <input placeholder='username' onChange={(e) => setUsername(e.target.value)}></input>
-                <input placeholder='password' onChange={(e) => setPassword(e.target.value)}></input>
-                <button onClick={register}>yessir</button>
-            </div>
-            <div>
-                Login:
-                <input placeholder='username' onChange={(e) => setUsername(e.target.value)}></input>
-                <input placeholder='password' onChange={(e) => setPassword(e.target.value)}></input>
-                <button onClick={login}>yessir</button>
-            </div>
-            <div className='text-red-500'>{error}</div>
-        </div>
-    )
+         const filteredResponse = await response.json()
+         dispatchLogin({
+            username: username,
+            rootID: filteredResponse.rootID,
+         })
+      } catch (err: any) {
+         console.log(err.message)
+         setError(err.message)
+      }
+   }
+
+   const dispatchLogin = async (user: User) => {
+      dispatch(setRoot(await fetchPostionFromID(user.rootID)))
+      dispatch(setUser(user));
+   }
+
+   return (
+      <div>
+         <div>
+            Register:
+            <input placeholder='username' onChange={(e) => setUsername(e.target.value)}></input>
+            <input placeholder='password' onChange={(e) => setPassword(e.target.value)}></input>
+            <button onClick={register}>yessir</button>
+         </div>
+         <div>
+            Login:
+            <input placeholder='username' onChange={(e) => setUsername(e.target.value)}></input>
+            <input placeholder='password' onChange={(e) => setPassword(e.target.value)}></input>
+            <button onClick={login}>yessir</button>
+         </div>
+         <div className='text-red-500'>{error}</div>
+      </div>
+   )
 }
 
 export default Login;

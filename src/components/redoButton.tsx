@@ -1,6 +1,5 @@
 import { Chess } from 'chess.js';
 import { TiChevronRight } from 'react-icons/ti'
-import { safeGameMutate } from '../@helpers';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import { redo } from '../redux/slices/board';
 
@@ -11,14 +10,13 @@ interface props {
 
 const RedoButton = (props: props) => {
    const dispatch = useAppDispatch();
-   const moves = useAppSelector((state) => state.board.moveData);
+   const moveList = useAppSelector((state) => state.board.moveList);
    const index = useAppSelector((state) => state.board.index)
 
    const handleClick = async () => {
-      if (index + 1 >= moves.length) return;
-      props.setGame(safeGameMutate(props.game, (game) => {
-         game.move(moves[index+1].move)
-      }))
+      if (index + 1 >= moveList.length) return;
+      const newBoard = new Chess(moveList[index+1].fen)
+      props.setGame(newBoard)
       dispatch(redo());
    }
 

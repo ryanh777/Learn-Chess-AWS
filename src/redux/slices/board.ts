@@ -1,37 +1,30 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { Move, MoveData, Orientation } from "../../@constants";
+import { DBMove, LocalMove, Move, Orientation } from "../../@constants";
 import { RootState } from "../store";
 
 interface BoardState {
-   moveData: Move[];
+   moveList: LocalMove[];
    boardOrientation: Orientation;
-   whiteRoot: Move;
-   blackRoot: Move;
+   root: DBMove
    index: number;
-   prevMove: Move;
+   prevMove: LocalMove;
 }
 
 const initialState: BoardState = {
-   moveData: [],
+   moveList: [],
    boardOrientation: Orientation.white,
-   whiteRoot: {
-      id: "",
-      move: "",
-      piece: "",
-      childData: []
-   },
-   blackRoot: {
-      id: "",
-      move: "",
-      piece: "",
-      childData: []
+   root: {
+      user: "",
+      fen: "",
+      nextMovesWhite: [],
+      nextMovesBlack: []
    },
    index: -1,
    prevMove: {
-      id: "",
+      fen: "",
       move: "",
       piece: "",
-      childData: []
+      nextMoveList: [],
    }
 }
 
@@ -39,99 +32,88 @@ export const boardSlice = createSlice({
    name: 'board',
    initialState,
    reducers: {
-      makeMove: (state, action: PayloadAction<Move>) => {
-         if (state.index + 1 == state.moveData.length) {
-            state.moveData.push(action.payload);
+      makeMove: (state, action: PayloadAction<LocalMove>) => {
+         if (state.index + 1 == state.moveList.length) {
+            state.moveList.push(action.payload);
             state.index++;
-            state.prevMove = state.moveData[state.index];
+            state.prevMove = state.moveList[state.index];
          }
-         if (state.index + 1 < state.moveData.length) {
-            if (state.moveData[state.index + 1] == action.payload) {
+         if (state.index + 1 < state.moveList.length) {
+            if (state.moveList[state.index + 1] == action.payload) {
                state.index++;
-               state.prevMove = state.moveData[state.index];
+               state.prevMove = state.moveList[state.index];
             } else {
-               while (state.index + 1 < state.moveData.length) state.moveData.pop();
-               state.moveData.push(action.payload);
+               while (state.index + 1 < state.moveList.length) state.moveList.pop();
+               state.moveList.push(action.payload);
                state.index++;
-               state.prevMove = state.moveData[state.index];
+               state.prevMove = state.moveList[state.index];
             }
          }
       },
       reset: (state) => {
-         state.moveData = [];
+         state.moveList = [];
          state.index = -1;
-         if (state.boardOrientation == Orientation.white) {
-            state.prevMove = state.whiteRoot;
-         } else {
-            state.prevMove = state.blackRoot;
-         }
+         boardSlice.caseReducers.setPrevMoveToRoot(state);
       },
       flip: (state) => {
-         state.moveData = [];
+         state.moveList = [];
          state.index = -1;
+         boardSlice.caseReducers.setPrevMoveToRoot(state);
          if (state.boardOrientation == Orientation.white) {
             state.boardOrientation = Orientation.black;
-            state.prevMove = state.blackRoot;
          } else {
             state.boardOrientation = Orientation.white;
-            state.prevMove = state.whiteRoot;
          }
       },
       undo: (state) => {
          if (state.index > 0) {
             state.index--;
-            state.prevMove = state.moveData[state.index];
+            state.prevMove = state.moveList[state.index];
          } else if (state.index == 0) {
             state.index--;
-            if (state.boardOrientation == Orientation.white) {
-               state.prevMove = state.whiteRoot;
-            } else {
-               state.prevMove = state.blackRoot;
-            }
+         boardSlice.caseReducers.setPrevMoveToRoot(state);
          }
       },
       redo: (state) => {
-         if (state.index + 1 < state.moveData.length) {
+         if (state.index + 1 < state.moveList.length) {
             state.index++;
-            state.prevMove = state.moveData[state.index];
          }
       },
-      resetAndSetWhiteRootMove: (state, action: PayloadAction<Move>) => {
-         state.moveData = [];
-         state.index = -1;
-         state.whiteRoot = action.payload;
-      },
-      resetAndSetBlackRootMove: (state, action: PayloadAction<Move>) => {
-         state.moveData = [];
-         state.index = -1;
-         state.blackRoot = action.payload;
+      setRoot: (state, action: PayloadAction<DBMove>) => {
+         state.root = action.payload;
+         boardSlice.caseReducers.setPrevMoveToRoot(state);
       },
       moveHadChild: (state, action: PayloadAction<Move>) => {
-         state.moveData[state.index] = action.payload;
-         state.prevMove = action.payload;
+         // state.moveList[state.index] = action.payload;
+         // state.prevMove = action.payload;
       },
       setIndex: (state, action: PayloadAction<number>) => {
          state.index = action.payload;
-         state.prevMove = state.moveData[action.payload];
+         // state.prevMove = state.moveList[action.payload];
       },
       setPrevMoveToRoot: (state) => {
-         if (state.boardOrientation == Orientation.white) {
-            state.prevMove = state.whiteRoot
-         } else {
-            state.prevMove = state.blackRoot
+         const move: LocalMove = {
+            fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -",
+            move: "",
+            piece: "",
+            nextMoveList: state.boardOrientation == Orientation.white ?
+               state.root.nextMovesWhite
+               :
+               state.root.nextMovesBlack
          }
+         state.prevMove = move
       },
-      editPrevMove: (state, action: PayloadAction<Move>) => {
-         if (state.index == -1) {
-            if (state.boardOrientation == Orientation.white) {
-               state.whiteRoot = action.payload;
-            } else {
-               state.blackRoot = action.payload;
-            }
-         }
-         state.moveData[state.index] = action.payload;
-         state.prevMove = action.payload;
-      }
+      // editPrevMove: (state, action: PayloadAction<Move>) => {
+         // if (state.index == -1) {
+         //    if (state.boardOrientation == Orientation.white) {
+         //       state.whiteRoot = action.payload;
+         //    } else {
+         //       state.blackRoot = action.payload;
+         //    }
+         // }
+         // state.moveList[state.index] = action.payload;
+         // state.prevMove = action.payload;
+      // }
    }
 })
 
@@ -141,12 +123,10 @@ export const {
    flip,
    undo,
    redo,
-   resetAndSetWhiteRootMove,
-   resetAndSetBlackRootMove,
+   setRoot,
    moveHadChild,
    setIndex,
-   setPrevMoveToRoot,
-   editPrevMove
+   // editPrevMove
 } = boardSlice.actions
 
 export const selectBoard = (state: RootState) => state.board

@@ -16,7 +16,7 @@ const AppStateButton = (props: Props) => {
                </div>
                :
                <div
-                  className='flex justify-center p-2 lg:mb-2'>
+                  className='flex justify-center p-2 lg:mb-2 hover:cursor-pointer'>
                   {props.icon}
                </div>
          }

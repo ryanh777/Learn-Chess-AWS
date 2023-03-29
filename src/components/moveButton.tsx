@@ -1,12 +1,11 @@
 import { Chess } from 'chess.js'
-import { MoveData, Move } from '../@constants'
-import { fetchMove, safeGameMutate } from '../@helpers'
+import { NextMove, DBMove } from '../@constants'
+import { fetchPostionFromFen, removeMoveCountFromFen } from '../@helpers'
 import { useAppDispatch, useAppSelector } from '../redux/hooks'
-import { flipDeleteState } from '../redux/slices/app'
-import { editPrevMove, makeMove } from '../redux/slices/board'
+import { makeMove } from '../redux/slices/board'
 
 interface Props {
-    child: MoveData
+    child: NextMove
     game: Chess
     setGame: React.Dispatch<React.SetStateAction<Chess>>
 }
@@ -15,41 +14,63 @@ const MoveButton = (props: Props) => {
    const dispatch = useAppDispatch();
    const prevMove = useAppSelector((state) => state.board.prevMove);
    const deleteActive = useAppSelector((state) => state.app.deleteActive);
+   const username = useAppSelector((state) => state.user.username)
+   const boardOrientation = useAppSelector((state) => state.board.boardOrientation);
 
    const handleClick = async () => { 
-      let childDataMinusRemovedMove: MoveData[] = [];
-      for (let i = 0; i < prevMove.childData.length; i++) {
-         if (prevMove.childData[i].move === props.child.move) {
-            const fetchedMove: Move = await fetchMove(prevMove.childData[i].id);
-            if (!deleteActive) {
-               dispatch(makeMove(fetchedMove));
-               props.setGame(safeGameMutate(props.game, (game) => {
-                  game.move(fetchedMove.move);
-               }))
-               return;
-            }
-            if (!confirm(`Are you sure you want to delete ${fetchedMove.move} and all of its following moves?`)) return;
-            deleteMove(fetchedMove);
-            continue;
-         }
-         childDataMinusRemovedMove.push(prevMove.childData[i]);
+      const newBoard = new Chess(props.game.fen())
+      newBoard.move(props.child.move)
+      props.setGame(newBoard)
+      const editedFen: string = removeMoveCountFromFen(newBoard.fen())
+      const savedPosition: DBMove | undefined = await fetchPostionFromFen({ user: username, fen: editedFen})
+      if (savedPosition) {
+         dispatch(makeMove({
+            fen: editedFen,
+            move: props.child.move,
+            piece: props.child.piece,
+            nextMoveList: boardOrientation == "white" ? savedPosition.nextMovesWhite : savedPosition.nextMovesBlack
+         }))
+      } else {
+         dispatch(makeMove({
+            fen: editedFen,
+            move: props.child.move,
+            piece: props.child.piece,
+            nextMoveList: [],
+         }));
       }
-      dispatch(editPrevMove({
-         ...prevMove,
-         childData: childDataMinusRemovedMove
-      }))
-      dispatch(flipDeleteState())
+      // let childDataMinusRemovedMove: NextMove[] = [];
+      // for (let i = 0; i < prevMove.nextMoveList.length; i++) {
+      //    if (prevMove.nextMoveList[i].move === props.child.move) {
+      //       const fetchedMove: Move = await fetchPosition(prevMove.nextMoveList[i]);
+      //       if (!deleteActive) {
+      //          dispatch(makeMove(fetchedMove));
+      //          props.setGame(safeGameMutate(props.game, (game) => {
+      //             game.move(fetchedMove.move);
+      //          }))
+      //          return;
+      //       }
+      //       // if (!confirm(`Are you sure you want to delete ${fetchedMove.move} and all of its following moves?`)) return;
+      //       // deleteMove(fetchedMove);
+      //       // continue;
+      //    }
+      //    childDataMinusRemovedMove.push(prevMove.nextMoveList[i]);
+      // }
+      // dispatch(editPrevMove({
+      //    ...prevMove,
+      //    nextMoves: childDataMinusRemovedMove
+      // }))
+      // dispatch(flipDeleteState())
    }
 
-   const deleteMove = async (move: Move) => {
-      await fetch(`/api/data/${prevMove.id}`, {
-         method: "DELETE",
-         headers: {
-            "Content-Type": "application/json",
-         },
-         body: JSON.stringify(move)
-      });
-   }
+   // const deleteMove = async (move: Move) => {
+   //    await fetch(`/api/data/${prevMove.id}`, {
+   //       method: "DELETE",
+   //       headers: {
+   //          "Content-Type": "application/json",
+   //       },
+   //       body: JSON.stringify(move)
+   //    });
+   // }
 
   return (
     <div 

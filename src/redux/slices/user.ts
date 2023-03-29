@@ -3,30 +3,27 @@ import { User } from "../../@constants";
 import { RootState } from "../store";
 
 interface UserStateType {
-    username: string;
-    whiteRootID: string;
-    blackRootID: string;
-    isLoggedIn: boolean;
- };
+   username: string;
+   rootID: string;
+   isLoggedIn: boolean;
+};
 
- const initialState: UserStateType = {
-    username: "",
-    whiteRootID: "",
-    blackRootID: "",
-    isLoggedIn: false,
- }
+const initialState: UserStateType = {
+   username: "",
+   rootID: "",
+   isLoggedIn: false,
+}
 
 export const userSlice = createSlice({
-    name: 'user',
-    initialState,
-    reducers: {
-        setUser: (state, action: PayloadAction<User>) => {
-            state.username = action.payload.username;
-            state.whiteRootID = action.payload.whiteRootID;
-            state.blackRootID = action.payload.blackRootID;
-            state.isLoggedIn = true;
-        }
-    }
+   name: 'user',
+   initialState,
+   reducers: {
+      setUser: (state, action: PayloadAction<User>) => {
+         state.username = action.payload.username;
+         state.rootID = action.payload.rootID;
+         state.isLoggedIn = true;
+      }
+   }
 })
 
 export const { setUser } = userSlice.actions

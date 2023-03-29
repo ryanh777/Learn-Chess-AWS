@@ -8,7 +8,7 @@ interface props {
 }
 
 const GameHistoryList = (props: props) => {
-   const moves = useAppSelector((state) => state.board.moveData);
+   const moves = useAppSelector((state) => state.board.moveList);
    return (
       <div className='flex flex-wrap p-2 m-3 bg-bgtertiary basis-1/2 rounded-xl'>
          {moves.map((move, index, arr) =>

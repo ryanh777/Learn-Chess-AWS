@@ -1,11 +1,13 @@
 import AppStateButton from "./appStateButton";
 import { IoBook, IoConstruct } from 'react-icons/io5'
+import { GrTest } from 'react-icons/gr'
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import { setAppState } from "../redux/slices/app";
-import { AppState, Orientation, MoveData, Move } from "../@constants";
+import { AppState, Orientation, Move } from "../@constants";
 import { makeMove, reset } from "../redux/slices/board";
 import { Chess } from "chess.js";
-import { getMoveIfChildOfPrev, getRandomInt } from "../handleLearnFuncs";
+// import { getMoveIfChildOfPrev, getRandomInt } from "../handleLearnFuncs";
+import { postMove, postMoves } from "../@helpers";
 
 interface props {
    game: Chess,
@@ -16,18 +18,19 @@ const Sidebar = (props: props) => {
    const dispatch = useAppDispatch();
    const appState = useAppSelector((state) => state.app.appState);
    const boardOrientation = useAppSelector((state) => state.board.boardOrientation);
-   const blackRoot = useAppSelector((state) => state.board.blackRoot);
-   const user = useAppSelector((state) => state.user.username)
-   const whiteRootID = useAppSelector((state) => state.board.whiteRoot.id)
-   const moveData = useAppSelector((state) => state.board.moveData);
+   const user = useAppSelector((state) => state.user)
+   const moveList = useAppSelector((state) => state.board.moveList);
    const prevMove = useAppSelector((state) => state.board.prevMove);
    const index = useAppSelector((state) => state.board.index);
+   const rootMove = useAppSelector((state) => state.board.root)
 
    const test = async () => {
-      console.log("moveData:", moveData)
+      console.log("moveList:", moveList)
       console.log("prevMove:", prevMove)
-      console.log("index", index);
-      console.log("game history", props.game.history())
+      // console.log("index", index);
+      // console.log("game history", props.game.history())
+      // console.log("user:", user)
+      console.log("rootMove:", rootMove)
    }
 
    return (
@@ -44,7 +47,7 @@ const Sidebar = (props: props) => {
             } />
          </div>
          {/* Learn */}
-         <div
+         {/* <div
             onClick={async () => {
                dispatch(setAppState(AppState.learn))
                dispatch(reset())
@@ -62,9 +65,9 @@ const Sidebar = (props: props) => {
             <AppStateButton active={appState == "learn" ? true : false} icon={
                appState == "learn" ? <IoBook size={44} /> : <IoBook fill={"#83817c"} size={36} />
             } />
-         </div>
+         </div> */}
          {/* Test */}
-         {/* <div onClick={test}><AppStateButton active={false} icon={<GrTest fill="none" stroke="red" />} /></div> */}
+         <div onClick={test}><AppStateButton active={false} icon={<GrTest fill="none" stroke="red" />} /></div>
       </div>
    )
 }
