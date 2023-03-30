@@ -60,7 +60,7 @@ const ChessboardContainer = (props: props) => {
       //    handleLearn(gameData.newGame, move);
       //    return true;
       // }
-      updateReduxWithMove(oldGameFen, newGame.fen(), move.san, move.color.concat(move.piece))
+      updateReduxWithMove(newGame.fen(), move.san, move.color.concat(move.piece))
       return true;
    }
 
@@ -95,7 +95,7 @@ const ChessboardContainer = (props: props) => {
    //    await updateReduxWithMove(autoMove.move, autoMove.piece, fetchedFirstMove);
    // }
 
-   const updateReduxWithMove = async (oldFen: string, newFen: string, move: string, piece: string): Promise<Move | undefined> => {
+   const updateReduxWithMove = async (newFen: string, move: string, piece: string): Promise<Move | undefined> => {
       const editedFen: string = removeMoveCountFromFen(newFen)
       const savedPosition: Move | undefined = await fetchPostionFromFen({ user: user.username, fen: editedFen })
 

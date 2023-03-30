@@ -4,6 +4,7 @@ export interface User {
 }
 
 export interface NextMove {
+   fen: string
    move: string
    piece: string
    numOfKids: number

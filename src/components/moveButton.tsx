@@ -1,8 +1,9 @@
 import { Chess } from 'chess.js'
-import { NextMove, DBMove } from '../@constants'
+import { NextMove, DBMove, LocalMove, Orientation } from '../@constants'
 import { fetchPostionFromFen, removeMoveCountFromFen } from '../@helpers'
 import { useAppDispatch, useAppSelector } from '../redux/hooks'
-import { makeMove } from '../redux/slices/board'
+import { flipDeleteState } from '../redux/slices/app'
+import { editPrevMove, makeMove } from '../redux/slices/board'
 
 interface Props {
     child: NextMove
@@ -14,15 +15,24 @@ const MoveButton = (props: Props) => {
    const dispatch = useAppDispatch();
    const prevMove = useAppSelector((state) => state.board.prevMove);
    const deleteActive = useAppSelector((state) => state.app.deleteActive);
-   const username = useAppSelector((state) => state.user.username)
+   const user = useAppSelector((state) => state.user)
    const boardOrientation = useAppSelector((state) => state.board.boardOrientation);
 
    const handleClick = async () => { 
+
+      if (deleteActive) {
+         if (!confirm(`Are you sure you want to delete ${props.child.move} and all of its following moves?`)) return;
+         const updatedPrev: DBMove = await deleteMove()
+         dispatch(editPrevMove(updatedPrev))
+         dispatch(flipDeleteState())
+         return
+      }
+
       const newBoard = new Chess(props.game.fen())
       newBoard.move(props.child.move)
       props.setGame(newBoard)
       const editedFen: string = removeMoveCountFromFen(newBoard.fen())
-      const savedPosition: DBMove | undefined = await fetchPostionFromFen({ user: username, fen: editedFen})
+      const savedPosition: DBMove | undefined = await fetchPostionFromFen({ user: user.username, fen: editedFen})
       if (savedPosition) {
          dispatch(makeMove({
             fen: editedFen,
@@ -62,15 +72,20 @@ const MoveButton = (props: Props) => {
       // dispatch(flipDeleteState())
    }
 
-   // const deleteMove = async (move: Move) => {
-   //    await fetch(`/api/data/${prevMove.id}`, {
-   //       method: "DELETE",
-   //       headers: {
-   //          "Content-Type": "application/json",
-   //       },
-   //       body: JSON.stringify(move)
-   //    });
-   // }
+   const deleteMove = async () => {
+      return await fetch(`/api/data/delete`, {
+         method: "DELETE",
+         headers: {
+            "Content-Type": "application/json",
+         },
+         body: JSON.stringify({
+            username: user.username,
+            fenToDelete: props.child.fen,
+            parentFen: prevMove.fen,
+            userColor: boardOrientation
+         })
+      }).then((res) => res.json())
+   }
 
   return (
     <div 
