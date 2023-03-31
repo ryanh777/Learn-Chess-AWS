@@ -1,9 +1,9 @@
 import { Chess } from 'chess.js'
-import { NextMove, DBMove, LocalMove, Orientation } from '../@constants'
+import { NextMove, DBMove } from '../@constants'
 import { fetchPostionFromFen, removeMoveCountFromFen } from '../@helpers'
 import { useAppDispatch, useAppSelector } from '../redux/hooks'
 import { flipDeleteState } from '../redux/slices/app'
-import { editPrevMove, makeMove } from '../redux/slices/board'
+import { makeMove, removeMove } from '../redux/slices/board'
 
 interface Props {
     child: NextMove
@@ -23,7 +23,7 @@ const MoveButton = (props: Props) => {
       if (deleteActive) {
          if (!confirm(`Are you sure you want to delete ${props.child.move} and all of its following moves?`)) return;
          const updatedPrev: DBMove = await deleteMove()
-         dispatch(editPrevMove(updatedPrev))
+         dispatch(removeMove(updatedPrev))
          dispatch(flipDeleteState())
          return
       }
@@ -48,28 +48,6 @@ const MoveButton = (props: Props) => {
             nextMoveList: [],
          }));
       }
-      // let childDataMinusRemovedMove: NextMove[] = [];
-      // for (let i = 0; i < prevMove.nextMoveList.length; i++) {
-      //    if (prevMove.nextMoveList[i].move === props.child.move) {
-      //       const fetchedMove: Move = await fetchPosition(prevMove.nextMoveList[i]);
-      //       if (!deleteActive) {
-      //          dispatch(makeMove(fetchedMove));
-      //          props.setGame(safeGameMutate(props.game, (game) => {
-      //             game.move(fetchedMove.move);
-      //          }))
-      //          return;
-      //       }
-      //       // if (!confirm(`Are you sure you want to delete ${fetchedMove.move} and all of its following moves?`)) return;
-      //       // deleteMove(fetchedMove);
-      //       // continue;
-      //    }
-      //    childDataMinusRemovedMove.push(prevMove.nextMoveList[i]);
-      // }
-      // dispatch(editPrevMove({
-      //    ...prevMove,
-      //    nextMoves: childDataMinusRemovedMove
-      // }))
-      // dispatch(flipDeleteState())
    }
 
    const deleteMove = async () => {

@@ -56,14 +56,12 @@ export const boardSlice = createSlice({
          boardSlice.caseReducers.setPrevMoveToRoot(state);
       },
       flip: (state) => {
-         state.moveList = [];
-         state.index = -1;
-         boardSlice.caseReducers.setPrevMoveToRoot(state);
          if (state.boardOrientation == Orientation.white) {
             state.boardOrientation = Orientation.black;
          } else {
             state.boardOrientation = Orientation.white;
          }
+         boardSlice.caseReducers.reset(state)
       },
       undo: (state) => {
          if (state.index > 0) {
@@ -71,7 +69,7 @@ export const boardSlice = createSlice({
             state.prevMove = state.moveList[state.index];
          } else if (state.index == 0) {
             state.index--;
-         boardSlice.caseReducers.setPrevMoveToRoot(state);
+            boardSlice.caseReducers.setPrevMoveToRoot(state);
          }
       },
       redo: (state) => {
@@ -86,13 +84,9 @@ export const boardSlice = createSlice({
          state.moveList = []
          state.index = -1
       },
-      moveHadChild: (state, action: PayloadAction<Move>) => {
-         // state.moveList[state.index] = action.payload;
-         // state.prevMove = action.payload;
-      },
       setIndex: (state, action: PayloadAction<number>) => {
          state.index = action.payload;
-         // state.prevMove = state.moveList[action.payload];
+         state.prevMove = state.moveList[action.payload];
       },
       setPrevMoveToRoot: (state) => {
          const move: LocalMove = {
@@ -106,19 +100,31 @@ export const boardSlice = createSlice({
          }
          state.prevMove = move
       },
-      editPrevMove: (state, action: PayloadAction<DBMove>) => {
-         if (state.index == -1 ) state.root = action.payload
+      removeMove: (state, action: PayloadAction<DBMove>) => {
+         if (state.index == -1) state.root = action.payload
          const move: LocalMove = {
             fen: action.payload.fen,
             move: "",
             piece: "",
             nextMoveList: state.boardOrientation == Orientation.white ?
                action.payload.nextMovesWhite
-               : 
+               :
                action.payload.nextMovesBlack
          }
-         state.moveList[state.index].nextMoveList = move.nextMoveList
+         if (state.index >= 0) state.moveList[state.index].nextMoveList = move.nextMoveList
          state.prevMove = move;
+      },
+      editPrevMove: (state, action: PayloadAction<DBMove>) => {
+         const move: LocalMove = {
+            fen: action.payload.fen,
+            move: "",
+            piece: "",
+            nextMoveList: state.boardOrientation == Orientation.white ?
+               action.payload.nextMovesWhite
+               :
+               action.payload.nextMovesBlack
+         }
+         state.prevMove = move
       }
    }
 })
@@ -130,8 +136,8 @@ export const {
    undo,
    redo,
    setRoot,
-   moveHadChild,
    setIndex,
+   removeMove,
    editPrevMove
 } = boardSlice.actions
 

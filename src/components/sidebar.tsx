@@ -3,11 +3,11 @@ import { IoBook, IoConstruct } from 'react-icons/io5'
 import { GrTest } from 'react-icons/gr'
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import { setAppState } from "../redux/slices/app";
-import { AppState, Orientation, Move } from "../@constants";
-import { makeMove, reset } from "../redux/slices/board";
+import { AppState, Orientation, NextMove } from "../@constants";
+import { editPrevMove, reset } from "../redux/slices/board";
 import { Chess } from "chess.js";
-// import { getMoveIfChildOfPrev, getRandomInt } from "../handleLearnFuncs";
-import { postMove, postMoves } from "../@helpers";
+import { fetchPostionFromFen } from "../@helpers";
+import { pickWeightedRandomIndex } from "../handleLearnFuncs";
 
 interface props {
    game: Chess,
@@ -22,15 +22,15 @@ const Sidebar = (props: props) => {
    const moveList = useAppSelector((state) => state.board.moveList);
    const prevMove = useAppSelector((state) => state.board.prevMove);
    const index = useAppSelector((state) => state.board.index);
-   const rootMove = useAppSelector((state) => state.board.root)
+   const root = useAppSelector((state) => state.board.root)
 
    const test = async () => {
       console.log("moveList:", moveList)
       console.log("prevMove:", prevMove)
       // console.log("index", index);
-      // console.log("game history", props.game.history())
+      console.log("game history", props.game.history())
       // console.log("user:", user)
-      console.log("rootMove:", rootMove)
+      // console.log("rootMove:", rootMove)
    }
 
    return (
@@ -47,25 +47,30 @@ const Sidebar = (props: props) => {
             } />
          </div>
          {/* Learn */}
-         {/* <div
+         <div
             onClick={async () => {
-               dispatch(setAppState(AppState.learn))
-               dispatch(reset())
+               if (boardOrientation == Orientation.white && root.nextMovesWhite.length == 0) {
+                  alert("You must save a line before learning")
+                  return
+               }
                if (boardOrientation == Orientation.black) {
-                  const autoMove: MoveData = blackRoot.childData[getRandomInt(blackRoot.childData.length)]
-                  const newGame: Chess = new Chess();
-                  newGame.move(autoMove.move);
-                  props.setGame(newGame);
-                  const childMove: Move | undefined = await getMoveIfChildOfPrev(autoMove.move, blackRoot);
-                  if (childMove) dispatch(makeMove(childMove))
+                  if (root.nextMovesBlack.length == 0) {
+                     alert("You must save a line before learning")
+                     return
+                  }
+                  const autoMove: NextMove = root.nextMovesBlack[pickWeightedRandomIndex(root.nextMovesBlack)]
+                  props.setGame(new Chess(autoMove.fen));
+                  dispatch(editPrevMove(await fetchPostionFromFen({ user: user.username, fen: autoMove.fen })))
                   return;
                }
+               dispatch(setAppState(AppState.learn))
+               dispatch(reset())
                props.setGame(new Chess())
             }}>
             <AppStateButton active={appState == "learn" ? true : false} icon={
                appState == "learn" ? <IoBook size={44} /> : <IoBook fill={"#83817c"} size={36} />
             } />
-         </div> */}
+         </div>
          {/* Test */}
          <div onClick={test}><AppStateButton active={false} icon={<GrTest fill="none" stroke="red" />} /></div>
       </div>

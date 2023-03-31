@@ -24,7 +24,7 @@ export const fetchPostionFromID = async (id: string): Promise<DBMove> => {
    return fetch(`/api/data/${id}`).then((res) => res.json());
 };
 
-export const fetchPostionFromFen = async (data: { user: string, fen: string }) => {
+export const fetchPostionFromFen = async (data: { user: string, fen: string }): Promise<DBMove> => {
    return fetch("/api/data/find", {
       method: "POST",
       headers: {
@@ -61,7 +61,6 @@ export async function postMoves(unsavedMoveList: LocalMove[], user: string, user
       user: user,
       userColor: userColor == "white" ? "w" : "b"
    }
-   let rootMove: DBMove;
    return await fetch("/api/data/save", {
       method: "POST",
       headers: {

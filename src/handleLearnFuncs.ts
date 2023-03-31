@@ -1,33 +1,36 @@
-import { Move as ChessMove} from "chess.js";
-import { LearnFailState, Move } from "./@constants";
-import { fetchMove } from "./@helpers";
+import { DBMove, LearnFailState, LocalMove, NextMove } from "./@constants";
+import { fetchPostionFromFen } from "./@helpers";
 
-// export const determineMoveForHandleLearn = async (move: ChessMove, prevMove: Move): Promise<MoveData | LearnFailState> => {
-//    if (prevMove.childData.length == 0) return LearnFailState.end;
+export const determineMoveForHandleLearn = async (prevMove: LocalMove, move: string, username: string, userColor: string): Promise<string | LearnFailState>=> {
+   if (prevMove.nextMoveList.length == 0) return LearnFailState.end;
+   
+   let matchedMove: NextMove | undefined;
+   prevMove.nextMoveList.forEach((nextMove) => {
+      if (move == nextMove.move) matchedMove = nextMove;
+   })
+   if (!matchedMove) return LearnFailState.incorrect;
 
-//    let matchedMove: MoveData | undefined;
-//    prevMove.childData.forEach((child) => {
-//       if (move.san == child.move) matchedMove = child;
-//    })
-//    if (!matchedMove) return LearnFailState.incorrect;
+   const completeMatchedMove: DBMove = await fetchPostionFromFen({ user: username, fen: matchedMove.fen })
+   if (!completeMatchedMove) return LearnFailState.end
+   const potentialOpponentMoves: NextMove[] = userColor == "white" ? 
+      completeMatchedMove.nextMovesWhite : completeMatchedMove.nextMovesBlack
+   const randomKidFen: string = potentialOpponentMoves[pickWeightedRandomIndex(potentialOpponentMoves)].fen
+   const completeRandomKidMove: DBMove = await fetchPostionFromFen({ user: username, fen: randomKidFen })
+   if (!completeRandomKidMove) return LearnFailState.end
+   return randomKidFen
+}
 
-//    const completeMatchedMove: Move = await fetchMove(matchedMove.id);
-//    const childData: MoveData[] = completeMatchedMove.childData;
-//    if (childData.length == 0) return LearnFailState.end;
-//    const randomChildMove: MoveData = childData[getRandomInt(childData.length)]
-//    const completeRandomChildMove = await fetchMove(randomChildMove.id);
-//    if (completeRandomChildMove.childData.length == 0) return LearnFailState.end;
-//    return randomChildMove;
-// }
-
-// export const getMoveIfChildOfPrev = async (move: string, prevMove: Move): Promise<Move | undefined> => {
-//    for (let i in prevMove.nextMoves) {
-//       if (prevMove.nextMoves[i].move === move) {
-//          return await fetchMove(prevMove.childData[i].id)
-//       }
-//    }
-// }
-
-export const getRandomInt = (max: number): number => {
-   return Math.floor(Math.random() * max)
+// picks random weighted index based on numOfKids count
+export const pickWeightedRandomIndex = (moveList: NextMove[]): number => {
+   let totalKids: number = 0
+   let cumulativeWeights: number[] = []
+   moveList.forEach((move) => {
+      totalKids = totalKids + move.numOfKids
+      cumulativeWeights.push(totalKids)
+   })
+   const randomNum: number = Math.random() * totalKids
+   for (let i = 0; i < cumulativeWeights.length; i++) {
+      if (cumulativeWeights[i] > randomNum) return i
+   }
+   return moveList.length - 1
 }
